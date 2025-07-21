@@ -6,7 +6,7 @@ import { UserSignIn } from "../api";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../redux/reducers/userSlice";
 import { openSnackbar } from "../redux/reducers/snackbarSlice";
-import { useNavigate } from "react-router-dom"; // ✅ Import useNavigate
+// import { useNavigate } from "react-router-dom"; // ✅ Import useNavigate
 
 const Container = styled.div`
   width: 100%;
@@ -41,9 +41,9 @@ const TextButton = styled.div`
   }
 `;
 
-const SignIn = () => {
+const SignIn = ({setOpenAuth }) => {
   const dispatch = useDispatch();
-  const navigate = useNavigate(); // ✅ Initialize navigation hook
+  // const navigate = useNavigate(); // ✅ Initialize navigation hook
 
   const [buttonLoading, setButtonLoading] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(false);
@@ -69,9 +69,11 @@ const SignIn = () => {
           openSnackbar({
             message: "Login Successful",
             severity: "success",
+             
           })
+          
         );
-        navigate("/"); // ✅ Redirect to home page on success
+         // ✅ Redirect to home page on success
       } catch (err) {
         if (err.response) {
           alert(err.response.data.message);
@@ -93,6 +95,8 @@ const SignIn = () => {
     }
     setButtonDisabled(false);
     setButtonLoading(false);
+    setOpenAuth(false);
+
   };
 
   return (
@@ -121,6 +125,7 @@ const SignIn = () => {
           onClick={handleSignIn}
           isLoading={buttonLoading}
           isDisabled={buttonDisabled}
+           
         />
       </div>
     </Container>

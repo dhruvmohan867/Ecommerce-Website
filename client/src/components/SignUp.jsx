@@ -83,8 +83,8 @@ const SignUp = ({ setOpenAuth }) => {
         });
     }
 
-    setButtonDisabled(false);
-    setLoading(false);
+    // setButtonDisabled(false);
+    // setLoading(false);
   };
 
   return (
