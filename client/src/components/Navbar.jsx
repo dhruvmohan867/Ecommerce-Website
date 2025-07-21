@@ -35,7 +35,7 @@ const NavbarContainer = styled.div`
   justify-content: space-between;
   font-size: 1rem;
 `;
-const NavLogo = styled.div`
+export const NavLogo = styled.a`
   width: 100%;
   display: flex;
   align-items: center;
@@ -153,9 +153,9 @@ const Navbar = ({ openAuth, setOpenAuth, currentUser }) => {
           <MenuRounded style={{ color: "inherit" }} />
         </MobileIcon>
 
-        <NavLogo>
-          <Logo src={LogoImg} />
-        </NavLogo>
+        <NavLogo href="/">
+            <Logo src={LogoImg} alt="Beach Resort" />
+         </NavLogo>
 
         <NavItems>
           <Navlink to="/">Home</Navlink>

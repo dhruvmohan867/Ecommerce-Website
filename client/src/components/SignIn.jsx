@@ -6,6 +6,7 @@ import { UserSignIn } from "../api";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../redux/reducers/userSlice";
 import { openSnackbar } from "../redux/reducers/snackbarSlice";
+import { useNavigate } from "react-router-dom"; // ✅ Import useNavigate
 
 const Container = styled.div`
   width: 100%;
@@ -14,16 +15,19 @@ const Container = styled.div`
   flex-direction: column;
   gap: 36px;
 `;
+
 const Title = styled.div`
   font-size: 30px;
   font-weight: 800;
   color: ${({ theme }) => theme.primary};
 `;
+
 const Span = styled.div`
   font-size: 16px;
   font-weight: 400;
   color: ${({ theme }) => theme.text_secondary + 90};
 `;
+
 const TextButton = styled.div`
   width: 100%;
   text-align: end;
@@ -39,6 +43,8 @@ const TextButton = styled.div`
 
 const SignIn = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate(); // ✅ Initialize navigation hook
+
   const [buttonLoading, setButtonLoading] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const [email, setEmail] = useState("");
@@ -52,42 +58,38 @@ const SignIn = () => {
     return true;
   };
 
-  const handelSignIn = async () => {
+  const handleSignIn = async () => {
     setButtonLoading(true);
     setButtonDisabled(true);
     if (validateInputs()) {
-      await UserSignIn({ email, password })
-        .then((res) => {
-          dispatch(loginSuccess(res.data));
+      try {
+        const res = await UserSignIn({ email, password });
+        dispatch(loginSuccess(res.data));
+        dispatch(
+          openSnackbar({
+            message: "Login Successful",
+            severity: "success",
+          })
+        );
+        navigate("/"); // ✅ Redirect to home page on success
+      } catch (err) {
+        if (err.response) {
+          alert(err.response.data.message);
           dispatch(
             openSnackbar({
-              message: "Login Successful",
-              severity: "success",
+              message: err.response.data.message,
+              severity: "error",
             })
           );
-        })
-        .catch((err) => {
-          if (err.response) {
-            setButtonLoading(false);
-            setButtonDisabled(false);
-            alert(err.response.data.message);
-            dispatch(
-              openSnackbar({
-                message: err.response.data.message,
-                severity: "error",
-              })
-            );
-          } else {
-            setButtonLoading(false);
-            setButtonDisabled(false);
-            dispatch(
-              openSnackbar({
-                message: err.message,
-                severity: "error",
-              })
-            );
-          }
-        });
+        } else {
+          dispatch(
+            openSnackbar({
+              message: err.message,
+              severity: "error",
+            })
+          );
+        }
+      }
     }
     setButtonDisabled(false);
     setButtonLoading(false);
@@ -104,20 +106,19 @@ const SignIn = () => {
           label="Email Address"
           placeholder="Enter your email address"
           value={email}
-          handelChange={(e) => setEmail(e.target.value)}
+          handleChange={(e) => setEmail(e.target.value)}
         />
         <TextInput
           label="Password"
           placeholder="Enter your password"
           password
           value={password}
-          handelChange={(e) => setPassword(e.target.value)}
+          handleChange={(e) => setPassword(e.target.value)}
         />
-
         <TextButton>Forgot Password?</TextButton>
         <Button
           text="Sign In"
-          onClick={handelSignIn}
+          onClick={handleSignIn}
           isLoading={buttonLoading}
           isDisabled={buttonDisabled}
         />

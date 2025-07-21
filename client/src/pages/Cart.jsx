@@ -357,7 +357,7 @@ const Cart = () => {
                         small
                         placeholder="First Name"
                         value={deliveryDetails.firstName}
-                        handelChange={(e) =>
+                        handleChange={(e) =>
                           setDeliveryDetails({
                             ...deliveryDetails,
                             firstName: e.target.value,
@@ -368,7 +368,7 @@ const Cart = () => {
                         small
                         placeholder="Last Name"
                         value={deliveryDetails.lastName}
-                        handelChange={(e) =>
+                        handleChange={(e) =>
                           setDeliveryDetails({
                             ...deliveryDetails,
                             lastName: e.target.value,
@@ -379,7 +379,7 @@ const Cart = () => {
                     <TextInput
                       small
                       value={deliveryDetails.emailAddress}
-                      handelChange={(e) =>
+                      handleChange={(e) =>
                         setDeliveryDetails({
                           ...deliveryDetails,
                           emailAddress: e.target.value,
@@ -390,7 +390,7 @@ const Cart = () => {
                     <TextInput
                       small
                       value={deliveryDetails.phoneNumber}
-                      handelChange={(e) =>
+                      handleChange={(e) =>
                         setDeliveryDetails({
                           ...deliveryDetails,
                           phoneNumber: e.target.value,
@@ -402,7 +402,7 @@ const Cart = () => {
                       small
                       textArea
                       rows="5"
-                      handelChange={(e) =>
+                      handleChange={(e) =>
                         setDeliveryDetails({
                           ...deliveryDetails,
                           completeAddress: e.target.value,
