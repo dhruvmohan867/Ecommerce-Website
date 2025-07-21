@@ -89,7 +89,7 @@ const Authentication = ({ openAuth, setOpenAuth }) => {
     <Modal open={openAuth} onClose={() => setOpenAuth(false)}>
       <Container>
         <Left>
-          <Logo src={LogoImage} />
+          {/* <Logo src={LogoImage} /> */}
           <Image src={AuthImage} />
         </Left>
         <Right>
