@@ -55,9 +55,19 @@ const Button = styled.div`
   background: white;
   border-radius: 12px;
   text-align: center;
-  font-weight: 500;
+  font-weight: 1000;
+  cursor: pointer;
+  transition:
+      background 0.3s ,
+      color 0.3s,
+      box-shadow : 0.2s
   @media (max-width: 600px) {
     padding: 6px 14px;
+  }
+  &:hover {
+    background: #2363eb;
+    color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
 `;
 const Sale = styled.div`

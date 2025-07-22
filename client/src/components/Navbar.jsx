@@ -25,7 +25,7 @@ const Nav = styled.div`
   font-size: 1rem;
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 1300;
   color: ${({ theme }) => theme.text_primary};
   border-bottom: 1px solid ${({ theme }) => theme.border_color};
   transition: all 0.3s ease;

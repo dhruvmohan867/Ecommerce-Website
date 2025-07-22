@@ -33,11 +33,11 @@ export const lightTheme = {
 // Dark theme with dynamic colors
 export const darkTheme = {
   bg: "#121212",
-  bgLight: "#1e1e1e",
+  // bgLight: "#1e1e1e",
   primary: "#e2e8f0",
   secondary: "#63b3ed",
   disabled: "#718096",
-  menubar: "#1a202c",
+  // // menubar: "#1a202c",
   navbar: "#1a202c",
   arrow: "#cbd5e0",
   menu_primary_text: "#e2e8f0",
