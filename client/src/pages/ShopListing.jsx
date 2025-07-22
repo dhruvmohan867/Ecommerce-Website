@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import ProductCard from "../components/cards/ProductCard.jsx";
 import styled from "styled-components";
-import { category, filter } from "../utils/data.js";
+import { filter } from "../utils/data.js";
 import { CircularProgress, Slider } from "@mui/material";
 import { getAllProducts } from "../api/index.js";
 
+// --- Styled components ---
 const Container = styled.div`
   padding: 20px 30px;
   height: 100vh;
@@ -83,125 +84,145 @@ const SelectableItem = styled.div`
   ${({ selected, theme }) =>
     selected &&
     `
-  border: 1px solid ${theme.text_primary};
+  border: 1.5px solid ${theme.text_primary};
   color: ${theme.text_primary};
   background: ${theme.text_primary + 30};
   font-weight: 500;
   `}
 `;
 
+// --- Component ---
+const minPrice = 0;
+const maxPrice = 1000;
+
 const ShopListing = () => {
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
-  const [priceRange, setPriceRange] = useState([0, 1000]);
-  const [selectedSizes, setSelectedSizes] = useState(["S", "M", "L", "XL"]); // Default selected sizes
+  // Controlled price filter for API (after user commits changes)
+  const [priceRange, setPriceRange] = useState([minPrice, maxPrice]);
+  // Temporary UI state for slider thumb as you drag
+  const [pendingRange, setPendingRange] = useState([minPrice, maxPrice]);
+  const [selectedSizes, setSelectedSizes] = useState(["S", "M", "L", "XL"]);
   const [selectedCategories, setSelectedCategories] = useState([
-    "Men",
-    "Women",
-    "Kids",
-    "Bags",
-  ]); // Default selected categories
+    "Men", "Women", "Kids", "Bags"
+  ]);
+  const [error, setError] = useState(null);
 
+  // Sync pendingRange whenever priceRange changes externally
+  useEffect(() => {
+    setPendingRange(priceRange);
+  }, [priceRange]);
+
+  // Get products with current filters
   const getFilteredProductsData = async () => {
     setLoading(true);
-    // Call the API function for filtered products
-    await getAllProducts(
-      `minPrice=${priceRange[0]}&maxPrice=${priceRange[1]}${
-        selectedSizes.length > 0 ? `&sizes=${selectedSizes.join(",")}` : ""
-      }${
-        selectedCategories.length > 0
-          ? `&categories=${selectedCategories.join(",")}`
-          : ""
-      }`
-    ).then((res) => {
+    setError(null);
+    try {
+      const res = await getAllProducts(
+        `minPrice=${priceRange[0]}&maxPrice=${priceRange[1]}${
+          selectedSizes.length > 0 ? `&sizes=${selectedSizes.join(",")}` : ""
+        }${
+          selectedCategories.length > 0
+            ? `&categories=${selectedCategories.join(",")}`
+            : ""
+        }`
+      );
       setProducts(res.data);
+    } catch (e) {
+      setError("Failed to fetch products. Please try again.");
+    } finally {
       setLoading(false);
-    });
+    }
   };
 
+  // Refetch products when filters change
   useEffect(() => {
     getFilteredProductsData();
+    // eslint-disable-next-line
   }, [priceRange, selectedSizes, selectedCategories]);
+
   return (
     <Container>
-      {loading ? (
-        <CircularProgress />
-      ) : (
-        <>
-          <Filters>
-            <Menu>
-              {filter.map((filters) => (
-                <FilterSection>
-                  <Title>{filters.name}</Title>
-                  {filters.value === "price" ? (
-                    <>
-                      <Slider
-                        aria-label="Price"
-                        defaultValue={priceRange}
-                        min={0}
-                        max={1000}
-                        valueLabelDisplay="auto"
-                        marks={[
-                          { value: 0, label: "$0" },
-                          { value: 1000, label: "$1000" },
-                        ]}
-                        onChange={(e, newValue) => setPriceRange(newValue)}
-                      />
-                    </>
-                  ) : filters.value === "size" ? (
-                    <Item>
-                      {filters.items.map((item) => (
-                        <SelectableItem
-                          key={item}
-                          selected={selectedSizes.includes(item)}
-                          onClick={() =>
-                            setSelectedSizes((prevSizes) =>
-                              prevSizes.includes(item)
-                                ? prevSizes.filter(
-                                    (category) => category !== item
-                                  )
-                                : [...prevSizes, item]
-                            )
-                          }
-                        >
-                          {item}
-                        </SelectableItem>
-                      ))}
-                    </Item>
-                  ) : filters.value === "category" ? (
-                    <Item>
-                      {filters.items.map((item) => (
-                        <SelectableItem
-                          key={item}
-                          selected={selectedCategories.includes(item)}
-                          onClick={() =>
-                            setSelectedCategories((prevCategories) =>
-                              prevCategories.includes(item)
-                                ? prevCategories.filter(
-                                    (category) => category !== item
-                                  )
-                                : [...prevCategories, item]
-                            )
-                          }
-                        >
-                          {item}
-                        </SelectableItem>
-                      ))}
-                    </Item>
-                  ) : null}
-                </FilterSection>
-              ))}
-            </Menu>
-          </Filters>
-          <Products>
-            <CardWrapper>
-              {products?.map((product) => (
+      <Filters>
+        <Menu>
+          {filter.map((filters) => (
+            <FilterSection key={filters.name}>
+              <Title>{filters.name}</Title>
+              {filters.value === "price" ? (
+                <Slider
+                  aria-label="Price"
+                  value={pendingRange}
+                  min={minPrice}
+                  max={maxPrice}
+                  id="price"
+                  valueLabelDisplay="auto"
+                  marks={[
+                    { value: minPrice, label: `$${minPrice}` },
+                    { value: maxPrice, label: `$${maxPrice}` },
+                  ]}
+                  onChange={(event, value) => setPendingRange(value)}
+                  onChangeCommitted={(event, value) => setPriceRange(value)}
+                />
+              ) : filters.value === "size" ? (
+                <Item>
+                  {filters.items.map((item) => (
+                    <SelectableItem
+                      key={item}
+                      selected={selectedSizes.includes(item)}
+                      onClick={() =>
+                        setSelectedSizes((prevSizes) =>
+                          prevSizes.includes(item)
+                            ? prevSizes.filter((size) => size !== item)
+                            : [...prevSizes, item]
+                        )
+                      }
+                    >
+                      {item}
+                    </SelectableItem>
+                  ))}
+                </Item>
+              ) : filters.value === "category" ? (
+                <Item>
+                  {filters.items.map((item) => (
+                    <SelectableItem
+                      key={item}
+                      selected={selectedCategories.includes(item)}
+                      onClick={() =>
+                        setSelectedCategories((prevCategories) =>
+                          prevCategories.includes(item)
+                            ? prevCategories.filter((cat) => cat !== item)
+                            : [...prevCategories, item]
+                        )
+                      }
+                    >
+                      {item}
+                    </SelectableItem>
+                  ))}
+                </Item>
+              ) : null}
+            </FilterSection>
+          ))}
+        </Menu>
+      </Filters>
+      <Products>
+        {loading ? (
+          <CircularProgress />
+        ) : error ? (
+          <div style={{ color: "red", textAlign: "center" }}>{error}</div>
+        ) : (
+          <CardWrapper>
+            {products && products.length > 0 ? (
+              products.map((product) => (
                 <ProductCard key={product._id} product={product} />
-              ))}
-            </CardWrapper>
-          </Products>
-        </>
-      )}
+              ))
+            ) : (
+              <div style={{ color: "#888", textAlign: "center", margin: "20px auto" }}>
+                No products found.
+              </div>
+            )}
+          </CardWrapper>
+        )}
+      </Products>
     </Container>
   );
 };

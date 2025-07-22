@@ -123,7 +123,10 @@ const ButtonWrapper = styled.div`
   display: flex;
   gap: 16px;
   padding: 32px 0px;
+  font-weight: 1000;
 `;
+ 
+
 const ProductDetails = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
