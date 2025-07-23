@@ -58,4 +58,7 @@ export const darkTheme = {
   popup_text_secondary: "#a0aec0",
   output_node: "#2d3748",
   border_color: "#2d3748",
+   button_bg: "#3b82f6",
+  button_text: "#ffffff",
+  button_hover_bg: "#2563eb",
 };

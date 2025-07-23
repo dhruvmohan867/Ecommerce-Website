@@ -42,7 +42,7 @@ const Title = styled.div`
 `;
 
 const Wrapper = styled.div`
-  display: flex;
+  // display: flex;
   gap: 32px;
   width: 100%;
   padding: 12px;
@@ -295,7 +295,7 @@ const Cart = () => {
                         </Details>
                       </Product>
                     </TableItem>
-                    <TableItem>${item?.product?.price?.org}</TableItem>
+                    <TableItem>₹{item?.product?.price?.org}</TableItem>
                     <TableItem>
                       <Counter>
                         <div
@@ -323,7 +323,7 @@ const Cart = () => {
                     </TableItem>
                     <TableItem>
                       {" "}
-                      ${(item.quantity * item?.product?.price?.org).toFixed(2)}
+                      ₹{(item.quantity * item?.product?.price?.org).toFixed(2)}
                     </TableItem>
                     <TableItem>
                       <DeleteOutline
@@ -342,7 +342,7 @@ const Cart = () => {
               </Left>
               <Right>
                 <Subtotal>
-                  Subtotal : ${calculateSubtotal().toFixed(2)}
+                  Subtotal : ₹{calculateSubtotal().toFixed(2)}
                 </Subtotal>
                 <Delivery>
                   Delivery Details:
@@ -430,7 +430,7 @@ const Cart = () => {
                   </div>
                 </Delivery>
                 <Button
-                  text="Pace Order"
+                  text="Place Order"
                   small
                   isLoading={buttonLoad}
                   isDisabled={buttonLoad}
