@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import Products from "../models/Products.js";
 import { createError } from "../error.js";
+import Orders from "../models/Orders.js";
 
 export const addProducts = async (req, res, next) => {
   try {
@@ -38,7 +39,17 @@ export const addProducts = async (req, res, next) => {
     next(err);
   }
 };
-
+export const getAllOrders = async (req, res, next) => {
+  try {
+    // It's better if you sort by most recent
+    const orders = await Orders.find({ user: req.user.id })
+      .populate("products.product")
+      .sort({ createdAt: -1 });
+    res.json(orders);
+  } catch (err) {
+    next(err);
+  }
+};
 export const getproducts = async (req, res, next) => {
   try {
     let { categories, minPrice, maxPrice, sizes, search } = req.query;
@@ -91,6 +102,6 @@ export const getProductById = async (req, res, next) => {
     }
     return res.status(200).json(product);
   } catch (err) {
-    return next(error);
+    return next(err);
   }
 };

@@ -50,9 +50,9 @@ const Menu = styled.div`
 `;
 const Button = styled.div`
   width: 100%;
-  color: ${({ theme }) => theme.primary};
+  color:  ${({ theme }) => theme.buttonText};
   padding: 12px 20px;
-  background: white;
+  background-color: ${({ theme }) => theme.primary};
   border-radius: 12px;
   text-align: center;
   font-weight: 1000;

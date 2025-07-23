@@ -12,6 +12,7 @@ import ToastMessage from "./components/ToastMessage.jsx";
 import TrackOrders from "./pages/TrackOrders.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import { useState, useEffect } from "react";
+import NewArrival from "./pages/NewArrival.jsx";
 
 const Container = styled.div`
   width: 100%;
@@ -79,6 +80,7 @@ function App() {
             <Route path="/favorite" element={<Favourite />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/shop/:id" element={<ProductDetails />} />
+           <Route path="/new-arrival" element={<NewArrival />} />
             <Route path="/Orders" element={<TrackOrders/>} />
           </Routes>
 

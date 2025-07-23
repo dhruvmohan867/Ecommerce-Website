@@ -266,7 +266,7 @@ const Navbar = ({ openAuth, setOpenAuth, currentUser, theme, setTheme }) => {
         <NavItems>
           <Navlink to="/">Home</Navlink>
           <Navlink to="/Shop">Shop</Navlink>
-          <Navlink to="/New_Arrivals">New Arrivals</Navlink>
+          <Navlink to="/new-arrival">New Arrivals</Navlink>
           <Navlink to="/Orders">Orders</Navlink>
         </NavItems>
 

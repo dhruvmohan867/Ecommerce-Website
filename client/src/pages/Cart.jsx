@@ -40,9 +40,36 @@ const Title = styled.div`
   justify-content: ${({ center }) => (center ? "center" : "space-between")};
   align-items: center;
 `;
+const SuccessContainer = styled.div`
+  background: #e0ffe8;
+  border-radius: 16px;
+  padding: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+`;
+
+const SuccessImg = styled.img`
+  width: 80px;
+  margin-bottom: 8px;
+`;
+
+const SuccessMessage = styled.div`
+  font-size: 20px;
+  color: #258d51;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 12px;
+`;
+
+const SuccessSub = styled.div`
+  font-size: 16px;
+  color: #333;
+  text-align: center;
+`;
 
 const Wrapper = styled.div`
-  // display: flex;
   gap: 32px;
   width: 100%;
   padding: 12px;
@@ -138,13 +165,23 @@ const Cart = () => {
   const [reload, setReload] = useState(false);
   const [products, setProducts] = useState([]);
   const [buttonLoad, setButtonLoad] = useState(false);
+  const [orderSuccess, setOrderSuccess] = useState(false);
 
+  // Delivery details state
   const [deliveryDetails, setDeliveryDetails] = useState({
     firstName: "",
     lastName: "",
     emailAddress: "",
     phoneNumber: "",
     completeAddress: "",
+  });
+
+  // Payment details state
+  const [paymentDetails, setPaymentDetails] = useState({
+    cardNumber: "",
+    expiryDate: "",
+    cvv: "",
+    cardHolder: "",
   });
 
   const getProducts = async () => {
@@ -204,10 +241,10 @@ const Cart = () => {
 
   useEffect(() => {
     getProducts();
+    // eslint-disable-next-line
   }, [reload]);
 
   const convertAddressToString = (addressObj) => {
-    // Convert the address object to a string representation
     return `${addressObj.firstName} ${addressObj.lastName}, ${addressObj.completeAddress}, ${addressObj.phoneNumber}, ${addressObj.emailAddress}`;
   };
 
@@ -222,15 +259,16 @@ const Cart = () => {
         deliveryDetails.emailAddress;
 
       if (!isDeliveryDetailsFilled) {
-        // Show an error message or handle the situation where delivery details are incomplete
         dispatch(
           openSnackbar({
             message: "Please fill in all required delivery details.",
             severity: "error",
           })
         );
+        setButtonLoad(false);
         return;
       }
+
       const token = localStorage.getItem("krist-app-token");
       const totalAmount = calculateSubtotal().toFixed(2);
       const orderDetails = {
@@ -241,7 +279,6 @@ const Cart = () => {
 
       await placeOrder(token, orderDetails);
 
-      // Show success message or navigate to a success page
       dispatch(
         openSnackbar({
           message: "Order placed successfully",
@@ -249,10 +286,8 @@ const Cart = () => {
         })
       );
       setButtonLoad(false);
-      // Clear the cart and update the UI
-      setReload(!reload);
+      setOrderSuccess(true); // set success!
     } catch (error) {
-      // Handle errors, show error message, etc.
       dispatch(
         openSnackbar({
           message: "Failed to place order. Please try again.",
@@ -262,6 +297,34 @@ const Cart = () => {
       setButtonLoad(false);
     }
   };
+
+  if (orderSuccess) {
+    return (
+      <Container>
+        <Section>
+          <SuccessContainer>
+            <SuccessImg
+              src="https://cdn-icons-png.flaticon.com/512/845/845646.png"
+              alt="Order Success"
+            />
+            <SuccessMessage>
+              🎉 Order Placed Successfully!
+            </SuccessMessage>
+            <SuccessSub>
+              Thank you for shopping with us.
+              <br />
+              We’re preparing your order and you’ll receive updates soon.
+            </SuccessSub>
+            <div style={{ display: "flex", gap: "16px", marginTop: "20px" }}>
+              <Button text="Continue Shopping" onClick={() => navigate("/shop")} />
+              <Button text="Track Orders" onClick={() => navigate("/orders")} />
+            </div>
+          </SuccessContainer>
+        </Section>
+      </Container>
+    );
+  }
+
   return (
     <Container>
       {loading ? (
@@ -275,19 +338,17 @@ const Cart = () => {
             <Wrapper>
               <Left>
                 <Table>
-                  <TableItem bold flex>
-                    Product
-                  </TableItem>
+                  <TableItem bold flex>Product</TableItem>
                   <TableItem bold>Price</TableItem>
                   <TableItem bold>Quantity</TableItem>
                   <TableItem bold>Subtotal</TableItem>
                   <TableItem></TableItem>
                 </Table>
                 {products?.map((item) => (
-                  <Table>
+                  <Table key={item?._id || item?.product?._id}>
                     <TableItem flex>
                       <Product>
-                        <Img src={item?.product?.img} />
+                        <Img src={item?.product?.img} alt="" />
                         <Details>
                           <Protitle>{item?.product?.title}</Protitle>
                           <ProDesc>{item?.product?.name}</ProDesc>
@@ -322,7 +383,6 @@ const Cart = () => {
                       </Counter>
                     </TableItem>
                     <TableItem>
-                      {" "}
                       ₹{(item.quantity * item?.product?.price?.org).toFixed(2)}
                     </TableItem>
                     <TableItem>
@@ -416,17 +476,57 @@ const Cart = () => {
                 <Delivery>
                   Payment Details:
                   <div>
-                    <TextInput small placeholder="Card Number" />
+                    <TextInput
+                      small
+                      placeholder="Card Number"
+                      value={paymentDetails.cardNumber}
+                      handleChange={(e) =>
+                        setPaymentDetails({
+                          ...paymentDetails,
+                          cardNumber: e.target.value,
+                        })
+                      }
+                    />
                     <div
                       style={{
                         display: "flex",
                         gap: "6px",
                       }}
                     >
-                      <TextInput small placeholder="Expiry Date" />
-                      <TextInput small placeholder="CVV" />
+                      <TextInput
+                        small
+                        placeholder="Expiry Date"
+                        value={paymentDetails.expiryDate}
+                        handleChange={(e) =>
+                          setPaymentDetails({
+                            ...paymentDetails,
+                            expiryDate: e.target.value,
+                          })
+                        }
+                      />
+                      <TextInput
+                        small
+                        placeholder="CVV"
+                        value={paymentDetails.cvv}
+                        handleChange={(e) =>
+                          setPaymentDetails({
+                            ...paymentDetails,
+                            cvv: e.target.value,
+                          })
+                        }
+                      />
                     </div>
-                    <TextInput small placeholder="Card Holder name" />
+                    <TextInput
+                      small
+                      placeholder="Card Holder name"
+                      value={paymentDetails.cardHolder}
+                      handleChange={(e) =>
+                        setPaymentDetails({
+                          ...paymentDetails,
+                          cardHolder: e.target.value,
+                        })
+                      }
+                    />
                   </div>
                 </Delivery>
                 <Button

@@ -4,8 +4,10 @@
 export const lightTheme = {
   bg: "#FFFFFF",
   bgLight: "#FFFFFF",
-  primary: "#131118",
+  primary: "#1a202c",
+  buttonText: "white",
   secondary: "#5B86E5",
+
   disabled: "#b1b2b3",
   menubar: "#f0f2f5",
   navbar: "#ffffff",
@@ -59,6 +61,7 @@ export const darkTheme = {
   output_node: "#2d3748",
   border_color: "#2d3748",
    button_bg: "#3b82f6",
-  button_text: "#ffffff",
+  primary: "#e2e8f0",
+  buttonText: "black",
   button_hover_bg: "#2563eb",
 };
