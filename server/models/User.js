@@ -22,7 +22,7 @@ const UserSchema = new mongoose.Schema(
     cart: {
       type: [
         {
-          product: { type: mongoose.Schema.Types.ObjectId, ref: "Products" },
+          product: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
           quantity: { type: Number, default: 1 },
         },
       ],
@@ -30,7 +30,7 @@ const UserSchema = new mongoose.Schema(
     },
     favourites: {
       type: [mongoose.Schema.Types.ObjectId],
-      ref: "Products",
+      ref: "Product",
       default: [],
     },
     orders: {

@@ -129,9 +129,9 @@ export const removeFromCart = async (req, res, next) => {
 export const getAllCartItems = async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id).populate({
-      path: "cart.product",
-      model: "Products", // ✅ use "Products" if your model is named that
-    });
+        path: "cart.product",
+        model: "Product",
+       })
 
     if (!user) return next(createError(404, "User not found"));
 

@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Products from "../models/Products.js";
+import Product from "../models/Product.js";
 import { createError } from "../error.js";
 import Orders from "../models/Orders.js";
 
@@ -18,7 +18,7 @@ export const addProducts = async (req, res, next) => {
     for (const productInfo of productsData) {
       const { title, name, desc, img, price, sizes, category } = productInfo;
 
-      const product = new Products({
+      const product = new Product({
         title,
         name,
         desc,
@@ -83,7 +83,7 @@ export const getproducts = async (req, res, next) => {
       ];
     }
 
-    const products = await Products.find(filter);
+    const products = await Product.find(filter);
     return res.status(200).json(products);
   } catch (err) {
     next(err);
@@ -96,7 +96,7 @@ export const getProductById = async (req, res, next) => {
     if (!mongoose.isValidObjectId(id)) {
       return next(createError(400, "Invalid product ID"));
     }
-    const product = await Products.findById(id);
+    const product = await Product.findById(id);
     if (!product) {
       return next(createError(404, "Product not found"));
     }
