@@ -293,7 +293,7 @@ const Navbar = ({ openAuth, setOpenAuth, currentUser, theme, setTheme }) => {
               <DarkMode /> Dark Mode
             </ThemeOption>
             <ThemeOption onClick={() => handleThemeChange('system')}>
-              <SettingsBrightness /> System
+              <SettingsBrightness /> 
             </ThemeOption>
             
             {currentUser ? (
