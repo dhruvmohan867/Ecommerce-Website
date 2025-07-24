@@ -9,8 +9,12 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 8080;
 app.use(cors({
-   origin: "https://ecommerce-website-frontend3.onrender.com",
+  origin: "https://ecommerce-website-frontend3.onrender.com",
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  credentials: true,
 }));
+
+app.options("*", cors());
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true }));
 
@@ -50,7 +54,7 @@ const connectDB = async () => {
 };
 
 const startServer = async () => {
-  await connectDB(); // ✅ Make sure Mongo is connected before listening
+  await connectDB(); 
   app.listen(PORT, () => console.log("🚀 Server started on port 8080"));
 };
 
