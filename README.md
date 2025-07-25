@@ -1,4 +1,4 @@
-# 🛒 E-commerce Website
+<# 🛒 E-commerce Website
 
 An elegant and modern e-commerce platform built using **React.js**. This application allows users to register, sign in, browse through a catalog of items, and perform standard e-commerce interactions. The platform is modular, responsive, and ideal for learning or as a foundation for a real-world project.
 
@@ -61,7 +61,7 @@ This project is open-source and available under the MIT License.
 
 ---
 
-### ✅ Changes made:
+<!--### ✅ Changes made:
 - Fixed inconsistent headers and spacing
 - Used code blocks properly
 - Formatted file structure section
@@ -73,7 +73,7 @@ Let me know if you want to add:
 - Environment variables section
 - Deployment instructions (Render, Vercel, Netlify)
 
-Want a badge (like "Built with React") at the top too? I can add that!
+Want a badge (like "Built with React") at the top too? I can add that!-->
 
 
 
