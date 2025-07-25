@@ -13,7 +13,7 @@ An elegant and modern e-commerce platform built using **React.js**. This applica
 
 ## 📁 Project Structure
 
-```bash
+
 Ecommerce-Website/
 ├── client/               # React Frontend
 │   ├── public/           # Static assets
