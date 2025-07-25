@@ -53,7 +53,7 @@ const Button = styled.button`
 
 const TrackOrders = () => {
   const navigate = useNavigate();
-  const [orders, setOrders] = useState([]);
+  const [orders, setorders] = useState([]);
   const [loading, setLoading] = useState(false);
 
   // Fetch user's orders on mount
@@ -64,9 +64,9 @@ const TrackOrders = () => {
       try {
         const data = await getOrders(token);
         // If your controller returns orders array directly
-        setOrders(Array.isArray(data) ? data : data.orders || []);
+        setorders(Array.isArray(data) ? data : data.orders || []);
       } catch (e) {
-        setOrders([]);
+        setorders([]);
       } finally {
         setLoading(false);
       }

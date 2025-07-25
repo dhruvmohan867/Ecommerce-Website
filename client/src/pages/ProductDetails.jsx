@@ -8,9 +8,9 @@ import { openSnackbar } from "../redux/reducers/snackbarSlice.js";
 import { useDispatch } from "react-redux";
 import {
   addToCart,
-  addToFavourite,
-  deleteFromFavourite,
-  getFavourite,
+  addToFavorite,
+  deleteFromFavorite,
+  getFavorite,
   getProductDetails,
 } from "../api/index.js";
 
@@ -149,7 +149,7 @@ const ProductDetails = () => {
   const addFavorite = async () => {
     setFavoriteLoading(true);
     const token = localStorage.getItem("krist-app-token");
-    await addToFavourite(token, { productID: product?._id })
+    await addToFavorite(token, { productID: product?._id })
       .then((res) => {
         setFavorite(true);
         setFavoriteLoading(false);
@@ -167,7 +167,7 @@ const ProductDetails = () => {
   const removeFavorite = async () => {
     setFavoriteLoading(true);
     const token = localStorage.getItem("krist-app-token");
-    await deleteFromFavourite(token, { productID: product?._id })
+    await deleteFromFavorite(token, { productID: product?._id })
       .then((res) => {
         setFavorite(false);
         setFavoriteLoading(false);
@@ -203,7 +203,7 @@ const ProductDetails = () => {
   const checkFavourite = async () => {
     setFavoriteLoading(true);
     const token = localStorage.getItem("krist-app-token");
-    await getFavourite(token, { productId: product?._id })
+    await getFavorite(token, { productId: product?._id })
       .then((res) => {
         const isFavorite = res.data?.some(
           (favorite) => favorite._id === product?._id

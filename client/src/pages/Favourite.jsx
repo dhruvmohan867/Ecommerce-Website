@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import ProductCard from "../components/cards/ProductCard";
-import { getFavourite } from "../api";
+import { getFavorite } from "../api/index.js";
 import { CircularProgress } from "@mui/material";
 
 const Container = styled.div`
@@ -52,7 +52,7 @@ const Favourite = () => {
   const getProducts = async () => {
     setLoading(true);
     const token = localStorage.getItem("krist-app-token");
-    await getFavourite(token).then((res) => {
+    await getFavorite(token).then((res) => {
       setProducts(res.data);
       setLoading(false);
       setReload(!reload);

@@ -21,15 +21,15 @@ router.post("/signin", UserLogin);
 //cart
 router.get("/cart", verifyToken, getAllCartItems);
 router.post("/cart", verifyToken, addToCart);
-router.patch("/cart", verifyToken, removeFromCart);
+router.delete("/cart", verifyToken, removeFromCart);
 
 //order
-router.get("/order", verifyToken, getAllOrders);
-router.post("/order", verifyToken, placeOrder);
+router.get("/orders", verifyToken, getAllOrders);
+router.post("/orders", verifyToken, placeOrder);
 
 //favourites
 router.get("/favorite", verifyToken, getUserFavourites);
 router.post("/favorite", verifyToken, addToFavorites);
-router.patch("/favorite", verifyToken, removeFromFavorites);
+router.delete("/favorite", verifyToken, removeFromFavorites);
 
 export default router;

@@ -81,7 +81,7 @@ function App() {
             <Route path="/cart" element={<Cart />} />
             <Route path="/shop/:id" element={<ProductDetails />} />
            <Route path="/new-arrival" element={<NewArrival />} />
-            <Route path="/Orders" element={<TrackOrders/>} />
+            <Route path="/orders" element={<TrackOrders/>} />
           </Routes>
 
           {openAuth && (
