@@ -265,7 +265,7 @@ const Navbar = ({ openAuth, setOpenAuth, currentUser, theme, setTheme }) => {
 
         <NavItems>
           <Navlink to="/">Home</Navlink>
-          <Navlink to="/Shop">Shop</Navlink>
+          <Navlink to="/shop">Shop</Navlink>
           <Navlink to="/new-arrival">New Arrivals</Navlink>
           <Navlink to="/Orders">Orders</Navlink>
         </NavItems>
@@ -275,10 +275,10 @@ const Navbar = ({ openAuth, setOpenAuth, currentUser, theme, setTheme }) => {
             <Navlink to="/" onClick={() => setIsOpen(!isOpen)}>
               Home
             </Navlink>
-            <Navlink onClick={() => setIsOpen(!isOpen)} to="/Shop">
+            <Navlink onClick={() => setIsOpen(!isOpen)} to="/shop">
               Shop
             </Navlink>
-            <Navlink onClick={() => setIsOpen(!isOpen)} to="/New_Arrivals">
+            <Navlink onClick={() => setIsOpen(!isOpen)} to="/new_Arrivals">
               New Arrivals
             </Navlink>
             <Navlink onClick={() => setIsOpen(!isOpen)} to="/Orders">
