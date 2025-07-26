@@ -4,10 +4,14 @@ import mongoose from "mongoose";
 import * as dotenv from "dotenv";
 import UserRouter from "./routes/User.js";
 import ProductRoutes from "./routes/Products.js";
+import path from "path";
+
 dotenv.config();
 
 const app = express();
+const __dirname = path.resolve();
 const PORT = process.env.PORT || 8080;
+
 app.use(cors({
   origin: "https://ecommerce-website-frontend3.onrender.com",
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
@@ -18,20 +22,19 @@ app.options("*", cors());
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/", async (req, res) => {
-  try {
-    res.status(200).json({
-      message: "Hello Developers",
-    });
-  } catch (err) {
-    res.status(500).json({ message: "Internal Server Error" });
-  }
+// ✅ API routes first
+app.use("/api/user", UserRouter);
+app.use("/api/products", ProductRoutes);
+
+// ✅ Serve React build folder
+app.use(express.static(path.join(__dirname, "../client/build")));
+
+// ✅ Catch-all route for SPA
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/build", "index.html"));
 });
 
-app.use("/api/user/", UserRouter);
-app.use("/api/products/", ProductRoutes);
-
-// error handler (should be after all routes)
+// ✅ Error handler
 app.use((err, req, res, next) => {
   const status = err.status || 500;
   const message = err.message || "Something went wrong";
@@ -55,7 +58,7 @@ const connectDB = async () => {
 
 const startServer = async () => {
   await connectDB(); 
-  app.listen(PORT, () => console.log("🚀 Server started on port 8080"));
+  app.listen(PORT, () => console.log(`🚀 Server started on port ${PORT}`));
 };
 
 startServer();

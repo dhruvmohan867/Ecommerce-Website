@@ -1,60 +1,99 @@
-import axios from "axios";
+import React, { useEffect, useState } from "react";
+import styled from "styled-components";
+import ProductCard from "../components/cards/ProductCard";
+import { getFavorite } from "../api/index.js";
+import { CircularProgress } from "@mui/material";
 
-const API = axios.create({
-  baseURL: "https://ecommerce-website-6qhx.onrender.com/api/",
-});
+const Container = styled.div`
+  padding: 20px 30px;
+  padding-bottom: 200px;
+  height: 100%;
+  overflow-y: scroll;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 30px;
+  @media (max-width: 768px) {
+    padding: 20px 12px;
+  }
+  background: ${({ theme }) => theme.bg};
+`;
 
-export const UserSignUp = async (data) => await API.post("/user/signup", data);
-export const UserSignIn = async (data) => await API.post("/user/signin", data);
+const Section = styled.div`
+  max-width: 1400px;
+  padding: 32px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+`;
 
-//Products
-export const getAllProducts = async (filter) =>
-  await API.get(`/products?${filter}`);
+const Title = styled.div`
+  font-size: 28px;
+  font-weight: 500;
+  display: flex;
+  justify-content: ${({ center }) => (center ? "center" : "space-between")};
+  align-items: center;
+`;
 
-export const getProductDetails = async (id) => await API.get(`/products/${id}`);
+const CardWrapper = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: center;
+  @media (max-width: 750px) {
+    gap: 14px;
+  }
+`;
 
-//Cart
+const Favourite = () => {
+  const [loading, setLoading] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [reload, setReload] = useState(false);
 
-export const getCart = async (token) =>
-  await API.get("/user/cart", {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  const fetchFavorites = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("krist-app-token");
+      if (!token) {
+        setProducts([]);
+        setLoading(false);
+        return;
+      }
+      const res = await getFavorite(token);
+      setProducts(res.data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching favorites:", error);
+      setLoading(false);
+    }
+  };
 
-export const addToCart = async (token, data) =>
-  await API.post(`/user/cart/`, data, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  useEffect(() => {
+    fetchFavorites();
+  }, [reload]); // Reload when favorite changes
 
-export const deleteFromCart = async (token, data) =>
-  await API.delete(`/user/cart/`, data, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+  return (
+    <Container>
+      <Section>
+        <Title>Your favourites</Title>
+        <CardWrapper>
+          {loading ? (
+            <CircularProgress />
+          ) : products.length === 0 ? (
+            <>No Products</>
+          ) : (
+            products.map((product) => (
+              <ProductCard
+                key={product._id}
+                product={product}
+                onFavoriteChange={() => setReload(!reload)} // Trigger reload after change
+              />
+            ))
+          )}
+        </CardWrapper>
+      </Section>
+    </Container>
+  );
+};
 
-//Favourites
-
-export const getFavorite = async (token) =>
-  await API.get(`/user/favorite`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-
-export const addToFavorite = async (token, data) =>
-  await API.post(`/user/favorite/`, data, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-
-export const deleteFromFavorite = async (token, data) =>
-  await API.delete(`/user/favorite/`, data, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-
-//Orders
-
-export const placeOrder = async (token, data) =>
-  await API.post(`/user/order/`, data, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-
-export const getOrders = async (token) =>
-  await API.get(`/user/order/`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
+export default Favourite;
