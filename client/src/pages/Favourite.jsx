@@ -18,6 +18,7 @@ const Container = styled.div`
   }
   background: ${({ theme }) => theme.bg};
 `;
+
 const Section = styled.div`
   max-width: 1400px;
   padding: 32px 16px;
@@ -49,19 +50,28 @@ const Favourite = () => {
   const [products, setProducts] = useState([]);
   const [reload, setReload] = useState(false);
 
-  const getProducts = async () => {
-    setLoading(true);
-    const token = localStorage.getItem("krist-app-token");
-    await getFavorite(token).then((res) => {
+  const fetchFavorites = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("krist-app-token");
+      if (!token) {
+        setProducts([]);
+        setLoading(false);
+        return;
+      }
+      const res = await getFavorite(token);
       setProducts(res.data);
       setLoading(false);
-      setReload(!reload);
-    });
+    } catch (error) {
+      console.error("Error fetching favorites:", error);
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    getProducts();
-  }, []);
+    fetchFavorites();
+  }, [reload]); // Reload when favorite changes
+
   return (
     <Container>
       <Section>
@@ -69,18 +79,16 @@ const Favourite = () => {
         <CardWrapper>
           {loading ? (
             <CircularProgress />
+          ) : products.length === 0 ? (
+            <>No Products</>
           ) : (
-            <>
-              {products.length === 0 ? (
-                <>No Products</>
-              ) : (
-                <CardWrapper>
-                  {products.map((product) => (
-                    <ProductCard product={product} />
-                  ))}
-                </CardWrapper>
-              )}
-            </>
+            products.map((product) => (
+              <ProductCard
+                key={product._id}
+                product={product}
+                onFavoriteChange={() => setReload(!reload)} // Trigger reload after change
+              />
+            ))
           )}
         </CardWrapper>
       </Section>
