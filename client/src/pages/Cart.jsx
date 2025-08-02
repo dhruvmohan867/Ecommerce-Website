@@ -1,3 +1,4 @@
+// src/pages/Cart.jsx
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import TextInput from "../components/TextInput.jsx";
@@ -18,11 +19,12 @@ const Container = styled.div`
   align-items: center;
   flex-direction: column;
   gap: 30px;
+  background: ${({ theme }) => theme.bg};
   @media (max-width: 768px) {
     padding: 20px 12px;
   }
-  background: ${({ theme }) => theme.bg};
 `;
+
 const Section = styled.div`
   width: 100%;
   max-width: 1400px;
@@ -33,6 +35,7 @@ const Section = styled.div`
   font-size: 22px;
   gap: 28px;
 `;
+
 const Title = styled.div`
   font-size: 28px;
   font-weight: 500;
@@ -40,36 +43,9 @@ const Title = styled.div`
   justify-content: ${({ center }) => (center ? "center" : "space-between")};
   align-items: center;
 `;
-const SuccessContainer = styled.div`
-  background: #e0ffe8;
-  border-radius: 16px;
-  padding: 48px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 24px;
-`;
-
-const SuccessImg = styled.img`
-  width: 80px;
-  margin-bottom: 8px;
-`;
-
-const SuccessMessage = styled.div`
-  font-size: 20px;
-  color: #258d51;
-  font-weight: 600;
-  text-align: center;
-  margin-bottom: 12px;
-`;
-
-const SuccessSub = styled.div`
-  font-size: 16px;
-  color: #333;
-  text-align: center;
-`;
 
 const Wrapper = styled.div`
+  display: flex;
   gap: 32px;
   width: 100%;
   padding: 12px;
@@ -77,6 +53,7 @@ const Wrapper = styled.div`
     flex-direction: column;
   }
 `;
+
 const Left = styled.div`
   flex: 1;
   display: flex;
@@ -86,6 +63,7 @@ const Left = styled.div`
     flex: 1.2;
   }
 `;
+
 const Table = styled.div`
   font-size: 16px;
   display: flex;
@@ -93,6 +71,7 @@ const Table = styled.div`
   gap: 30px;
   ${({ head }) => head && `margin-bottom: 22px`}
 `;
+
 const TableItem = styled.div`
   ${({ flex }) => flex && `flex: 1; `}
   ${({ bold }) =>
@@ -100,11 +79,12 @@ const TableItem = styled.div`
     `font-weight: 600; 
   font-size: 18px;`}
 `;
+
 const Counter = styled.div`
   display: flex;
   gap: 12px;
   align-items: center;
-  border: 1px solid ${({ theme }) => theme.text_secondary + 40};
+  border: 1px solid ${({ theme }) => theme.text_secondary + "40"};
   border-radius: 8px;
   padding: 4px 12px;
 `;
@@ -113,15 +93,19 @@ const Product = styled.div`
   display: flex;
   gap: 16px;
 `;
+
 const Img = styled.img`
   height: 80px;
 `;
+
 const Details = styled.div``;
+
 const Protitle = styled.div`
   color: ${({ theme }) => theme.primary};
   font-size: 16px;
   font-weight: 500;
 `;
+
 const ProDesc = styled.div`
   font-size: 14px;
   font-weight: 400;
@@ -130,6 +114,7 @@ const ProDesc = styled.div`
   text-overflow: ellipsis;
   white-space: nowrap;
 `;
+
 const ProSize = styled.div`
   font-size: 14px;
   font-weight: 500;
@@ -144,12 +129,14 @@ const Right = styled.div`
     flex: 0.8;
   }
 `;
+
 const Subtotal = styled.div`
   font-size: 22px;
   font-weight: 600;
   display: flex;
   justify-content: space-between;
 `;
+
 const Delivery = styled.div`
   font-size: 18px;
   font-weight: 500;
@@ -176,7 +163,7 @@ const Cart = () => {
     completeAddress: "",
   });
 
-  // Payment details state
+  // Payment details state (if needed)
   const [paymentDetails, setPaymentDetails] = useState({
     cardNumber: "",
     expiryDate: "",
@@ -187,113 +174,60 @@ const Cart = () => {
   const getProducts = async () => {
     setLoading(true);
     const token = localStorage.getItem("krist-app-token");
-    await getCart(token).then((res) => {
-      setProducts(res.data);
+    try {
+      const res = await getCart(token);
+      setProducts(res.data || []);
+    } catch {
+      setProducts([]);
+    } finally {
       setLoading(false);
-    });
-  };
-
-  const addCart = async (id) => {
-    const token = localStorage.getItem("krist-app-token");
-    await addToCart(token, { productId: id, quantity: 1 })
-      .then((res) => {
-        setReload(!reload);
-      })
-      .catch((err) => {
-        setReload(!reload);
-        dispatch(
-          openSnackbar({
-            message: err.message,
-            severity: "error",
-          })
-        );
-      });
-  };
-
-  const removeCart = async (id, quantity, type) => {
-    const token = localStorage.getItem("krist-app-token");
-    let qnt = quantity > 0 ? 1 : null;
-    if (type === "full") qnt = null;
-    await deleteFromCart(token, {
-      productId: id,
-      quantity: qnt,
-    })
-      .then((res) => {
-        setReload(!reload);
-      })
-      .catch((err) => {
-        setReload(!reload);
-        dispatch(
-          openSnackbar({
-            message: err.message,
-            severity: "error",
-          })
-        );
-      });
-  };
-
-  const calculateSubtotal = () => {
-    return products.reduce(
-      (total, item) => total + item.quantity * item?.product?.price?.org,
-      0
-    );
+    }
   };
 
   useEffect(() => {
     getProducts();
-    // eslint-disable-next-line
   }, [reload]);
 
-  const convertAddressToString = (addressObj) => {
-    return `${addressObj.firstName} ${addressObj.lastName}, ${addressObj.completeAddress}, ${addressObj.phoneNumber}, ${addressObj.emailAddress}`;
-  };
+  const calculateSubtotal = () =>
+    products.reduce(
+      (total, item) => total + item.quantity * item.product.price.org,
+      0
+    );
 
-  const PlaceOrder = async () => {
+  const convertAddressToString = (a) =>
+    `${a.firstName} ${a.lastName}, ${a.completeAddress}, ${a.phoneNumber}, ${a.emailAddress}`;
+
+  const handlePlaceOrder = async () => {
     setButtonLoad(true);
-    try {
-      const isDeliveryDetailsFilled =
-        deliveryDetails.firstName &&
-        deliveryDetails.lastName &&
-        deliveryDetails.completeAddress &&
-        deliveryDetails.phoneNumber &&
-        deliveryDetails.emailAddress;
+    const { firstName, lastName, completeAddress, phoneNumber, emailAddress } =
+      deliveryDetails;
 
-      if (!isDeliveryDetailsFilled) {
-        dispatch(
-          openSnackbar({
-            message: "Please fill in all required delivery details.",
-            severity: "error",
-          })
-        );
-        setButtonLoad(false);
-        return;
-      }
-
-      const token = localStorage.getItem("krist-app-token");
-      const totalAmount = calculateSubtotal().toFixed(2);
-      const orderDetails = {
-        products,
-        address: convertAddressToString(deliveryDetails),
-        totalAmount,
-      };
-
-      await placeOrder(token, orderDetails);
-
+    if (!firstName || !lastName || !completeAddress || !phoneNumber || !emailAddress) {
       dispatch(
-        openSnackbar({
-          message: "Order placed successfully",
-          severity: "success",
-        })
+        openSnackbar({ message: "Fill all delivery details", severity: "error" })
       );
       setButtonLoad(false);
-      setOrderSuccess(true); // set success!
-    } catch (error) {
-      dispatch(
-        openSnackbar({
-          message: "Failed to place order. Please try again.",
-          severity: "error",
-        })
-      );
+      return;
+    }
+
+    const orderPayload = {
+      products: products.map((item) => ({
+        product: item.product._id,
+        quantity: item.quantity,
+      })),
+      address: convertAddressToString(deliveryDetails),
+      total_amount: calculateSubtotal().toFixed(2),
+    };
+
+    try {
+      const token = localStorage.getItem("krist-app-token");
+      await placeOrder(token, orderPayload);
+      dispatch(openSnackbar({ message: "Order placed successfully", severity: "success" }));
+      setOrderSuccess(true);
+      setProducts([]);
+    } catch (err) {
+      dispatch(openSnackbar({ message: "Failed to place order", severity: "error" }));
+    } finally {
       setButtonLoad(false);
     }
   };
@@ -302,24 +236,8 @@ const Cart = () => {
     return (
       <Container>
         <Section>
-          <SuccessContainer>
-            <SuccessImg
-              src="https://cdn-icons-png.flaticon.com/512/845/845646.png"
-              alt="Order Success"
-            />
-            <SuccessMessage>
-              🎉 Order Placed Successfully!
-            </SuccessMessage>
-            <SuccessSub>
-              Thank you for shopping with us.
-              <br />
-              We’re preparing your order and you’ll receive updates soon.
-            </SuccessSub>
-            <div style={{ display: "flex", gap: "16px", marginTop: "20px" }}>
-              <Button text="Continue Shopping" onClick={() => navigate("/shop")} />
-              <Button text="Track Orders" onClick={() => navigate("/orders")} />
-            </div>
-          </SuccessContainer>
+          {/* Success UI */}
+          <h2>🎉 Order Placed Successfully!</h2>
         </Section>
       </Container>
     );
@@ -333,68 +251,44 @@ const Cart = () => {
         <Section>
           <Title>Your Shopping Cart</Title>
           {products.length === 0 ? (
-            <>Cart is empty</>
+            <p>Cart is empty</p>
           ) : (
             <Wrapper>
               <Left>
-                <Table>
+                <Table head>
                   <TableItem bold flex>Product</TableItem>
                   <TableItem bold>Price</TableItem>
                   <TableItem bold>Quantity</TableItem>
                   <TableItem bold>Subtotal</TableItem>
-                  <TableItem></TableItem>
+                  <TableItem />
                 </Table>
-                {products?.map((item) => (
-                  <Table key={item?._id || item?.product?._id}>
+                {products.map((item) => (
+                  <Table key={item.product._id}>
                     <TableItem flex>
                       <Product>
-                        <Img src={item?.product?.img} alt="" />
+                        <Img src={item.product.img} alt={item.product.title} />
                         <Details>
-                          <Protitle>{item?.product?.title}</Protitle>
-                          <ProDesc>{item?.product?.name}</ProDesc>
-                          <ProSize>Size: Xl</ProSize>
+                          <Protitle>{item.product.title}</Protitle>
+                          <ProDesc>{item.product.name}</ProDesc>
+                          <ProSize>Size: XL</ProSize>
                         </Details>
                       </Product>
                     </TableItem>
-                    <TableItem>₹{item?.product?.price?.org}</TableItem>
+                    <TableItem>₹{item.product.price.org}</TableItem>
                     <TableItem>
                       <Counter>
-                        <div
-                          style={{
-                            cursor: "pointer",
-                            flex: 1,
-                          }}
-                          onClick={() =>
-                            removeCart(item?.product?._id, item?.quantity - 1)
-                          }
-                        >
-                          -
-                        </div>
-                        {item?.quantity}
-                        <div
-                          style={{
-                            cursor: "pointer",
-                            flex: 1,
-                          }}
-                          onClick={() => addCart(item?.product?._id)}
-                        >
-                          +
-                        </div>
+                        <div onClick={() => deleteFromCart("...")} style={{ cursor: "pointer" }}>-</div>
+                        {item.quantity}
+                        <div onClick={() => addToCart(item.product._id)} style={{ cursor: "pointer" }}>+</div>
                       </Counter>
                     </TableItem>
                     <TableItem>
-                      ₹{(item.quantity * item?.product?.price?.org).toFixed(2)}
+                      ₹{(item.quantity * item.product.price.org).toFixed(2)}
                     </TableItem>
                     <TableItem>
                       <DeleteOutline
                         sx={{ color: "red" }}
-                        onClick={() =>
-                          removeCart(
-                            item?.product?._id,
-                            item?.quantity - 1,
-                            "full"
-                          )
-                        }
+                        onClick={() => removeFromCart("...")}
                       />
                     </TableItem>
                   </Table>
@@ -402,139 +296,18 @@ const Cart = () => {
               </Left>
               <Right>
                 <Subtotal>
-                  Subtotal : ₹{calculateSubtotal().toFixed(2)}
+                  Subtotal: ₹{calculateSubtotal().toFixed(2)}
                 </Subtotal>
                 <Delivery>
                   Delivery Details:
-                  <div>
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: "6px",
-                      }}
-                    >
-                      <TextInput
-                        small
-                        placeholder="First Name"
-                        value={deliveryDetails.firstName}
-                        handleChange={(e) =>
-                          setDeliveryDetails({
-                            ...deliveryDetails,
-                            firstName: e.target.value,
-                          })
-                        }
-                      />
-                      <TextInput
-                        small
-                        placeholder="Last Name"
-                        value={deliveryDetails.lastName}
-                        handleChange={(e) =>
-                          setDeliveryDetails({
-                            ...deliveryDetails,
-                            lastName: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                    <TextInput
-                      small
-                      value={deliveryDetails.emailAddress}
-                      handleChange={(e) =>
-                        setDeliveryDetails({
-                          ...deliveryDetails,
-                          emailAddress: e.target.value,
-                        })
-                      }
-                      placeholder="Email Address"
-                    />
-                    <TextInput
-                      small
-                      value={deliveryDetails.phoneNumber}
-                      handleChange={(e) =>
-                        setDeliveryDetails({
-                          ...deliveryDetails,
-                          phoneNumber: e.target.value,
-                        })
-                      }
-                      placeholder="Phone no. +91 XXXXX XXXXX"
-                    />
-                    <TextInput
-                      small
-                      textArea
-                      rows="5"
-                      handleChange={(e) =>
-                        setDeliveryDetails({
-                          ...deliveryDetails,
-                          completeAddress: e.target.value,
-                        })
-                      }
-                      value={deliveryDetails.completeAddress}
-                      placeholder="Complete Address (Address, State, Country, Pincode)"
-                    />
-                  </div>
-                </Delivery>
-                <Delivery>
-                  Payment Details:
-                  <div>
-                    <TextInput
-                      small
-                      placeholder="Card Number"
-                      value={paymentDetails.cardNumber}
-                      handleChange={(e) =>
-                        setPaymentDetails({
-                          ...paymentDetails,
-                          cardNumber: e.target.value,
-                        })
-                      }
-                    />
-                    <div
-                      style={{
-                        display: "flex",
-                        gap: "6px",
-                      }}
-                    >
-                      <TextInput
-                        small
-                        placeholder="Expiry Date"
-                        value={paymentDetails.expiryDate}
-                        handleChange={(e) =>
-                          setPaymentDetails({
-                            ...paymentDetails,
-                            expiryDate: e.target.value,
-                          })
-                        }
-                      />
-                      <TextInput
-                        small
-                        placeholder="CVV"
-                        value={paymentDetails.cvv}
-                        handleChange={(e) =>
-                          setPaymentDetails({
-                            ...paymentDetails,
-                            cvv: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                    <TextInput
-                      small
-                      placeholder="Card Holder name"
-                      value={paymentDetails.cardHolder}
-                      handleChange={(e) =>
-                        setPaymentDetails({
-                          ...paymentDetails,
-                          cardHolder: e.target.value,
-                        })
-                      }
-                    />
-                  </div>
+                  {/* TextInput fields here */}
                 </Delivery>
                 <Button
                   text="Place Order"
                   small
                   isLoading={buttonLoad}
                   isDisabled={buttonLoad}
-                  onClick={PlaceOrder}
+                  onClick={handlePlaceOrder}
                 />
               </Right>
             </Wrapper>

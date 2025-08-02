@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { getOrders } from "../api";
+import { getOrders } from "../api/index.js";
 
 const Container = styled.div`
   padding: 40px 20px;
@@ -29,14 +29,32 @@ const OrderCard = styled.div`
 `;
 
 const Row = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin: 6px 0;
+  margin: 12px 0;
   font-size: 16px;
   color: ${({ theme }) => theme.text_secondary};
 `;
 
-const Button = styled.button`
+const ProductsList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+`;
+
+const ProductRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
+
+const Thumb = styled.img`
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+`;
+
+const ShopButton = styled.button`
   padding: 10px 20px;
   margin-top: 40px;
   border: none;
@@ -45,68 +63,75 @@ const Button = styled.button`
   font-size: 16px;
   border-radius: 8px;
   cursor: pointer;
-
-  &:hover {
-    opacity: 0.9;
-  }
+  &:hover { opacity: 0.9; }
 `;
 
 const TrackOrders = () => {
   const navigate = useNavigate();
-  const [orders, setorders] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Fetch user's orders on mount
   useEffect(() => {
-    const fetchOrders = async () => {
+    (async () => {
       setLoading(true);
-      const token = localStorage.getItem("krist-app-token");
       try {
+        const token = localStorage.getItem("krist-app-token");
         const data = await getOrders(token);
-        // If your controller returns orders array directly
-        setorders(Array.isArray(data) ? data : data.orders || []);
-      } catch (e) {
-        setorders([]);
+        setOrders(Array.isArray(data) ? data : data.orders || []);
+      } catch {
+        setOrders([]);
       } finally {
         setLoading(false);
       }
-    };
-    fetchOrders();
+    })();
   }, []);
+
+  if (loading) {
+    return <Container><p>Loading orders…</p></Container>;
+  }
+
+  if (orders.length === 0) {
+    return (
+      <Container>
+        <Title>No orders found</Title>
+        <ShopButton onClick={() => navigate("/shop")}>Shop Now</ShopButton>
+      </Container>
+    );
+  }
 
   return (
     <Container>
       <Title>Track Your Orders</Title>
-      {loading ? (
-        <p>Loading orders...</p>
-      ) : orders.length === 0 ? (
-        <>
-          <p style={{ color: "#777", fontSize: "18px" }}>
-            You haven't placed any orders yet.
-          </p>
-          <Button onClick={() => navigate("/shop")}>Shop Now</Button>
-        </>
-      ) : (
-        orders.map((order) => (
-          <OrderCard key={order._id}>
-            <Row><strong>Order ID:</strong> {order._id}</Row>
-            <Row>
-              <strong>Products:</strong>
-              {order.products && order.products.length > 0
-                ? order.products.map((prod, idx) =>
-                    <div key={idx}>
-                      {prod.product?.title || prod.product?.name || "Product"} x{prod.quantity}
+      {orders.map((order) => (
+        <OrderCard key={order._id}>
+          <Row><strong>Order ID:</strong> {order._id}</Row>
+          <Row>
+            <strong>Products:</strong>
+            <ProductsList>
+              {(order.products || []).map((item, idx) => (
+                <ProductRow key={idx}>
+                  {item.product?.img && <Thumb src={item.product.img} alt={item.product.title} />}
+                  <div>
+                    <div style={{ fontWeight: 500 }}>
+                      {item.product?.title || item.product?.name || "Unknown"}
                     </div>
-                  )
-                : "N/A"}
-            </Row>
-            <Row><strong>Total:</strong> ₹{order.total_amount?.$numberDecimal || order.total_amount}</Row>
-            <Row><strong>Status:</strong> {order.status}</Row>
-            <Row><strong>Date:</strong> {order.createdAt && (new Date(order.createdAt)).toLocaleString()}</Row>
-          </OrderCard>
-        ))
-      )}
+                    <div>Quantity: {item.quantity}</div>
+                  </div>
+                </ProductRow>
+              ))}
+            </ProductsList>
+          </Row>
+          <Row>
+            <strong>Total:</strong> ₹{order.total_amount?.$numberDecimal ?? order.total_amount ?? "0.00"}
+          </Row>
+          <Row><strong>Status:</strong> {order.status || "N/A"}</Row>
+          <Row>
+            <strong>Date:</strong> {order.createdAt ? new Date(order.createdAt).toLocaleString() : "—"}
+          </Row>
+        </OrderCard>
+      ))}
     </Container>
   );
 };
+
 export default TrackOrders;

@@ -99,7 +99,7 @@ const ButtonContainer = styled.div`
   align-items: center;
   padding: 0 6px;
   color: ${({ theme }) => theme.primary};
-  
+  // background-color: ${({ theme }) => theme.primary};
   @media screen and (max-width: 768px) {
     display: none;
   }

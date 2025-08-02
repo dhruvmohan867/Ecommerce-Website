@@ -11,6 +11,7 @@ const Button = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  color: ${({ theme }) => theme.buttonText};
   gap: 6px;
   height: min-content;
   padding: 16px 26px;

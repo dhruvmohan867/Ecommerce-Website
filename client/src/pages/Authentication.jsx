@@ -56,6 +56,7 @@ const CloseButton = styled.div`
   padding: 2px;
   width: 32px;
   height: 32px;
+  // background-color: ${({ theme }) => theme.primary};
   border: 1px solid ${({ theme }) => theme.primary};
   display: flex;
   justify-content: center;
@@ -78,6 +79,7 @@ const Text = styled.p`
 `;
 const TextButton = styled.div`
   color: ${({ theme }) => theme.primary};
+  // background-color: ${({ theme }) => theme.primary};
   cursor: pointer;
   transition: all 0.3s ease;
   font-weight: 600;
