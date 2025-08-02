@@ -154,21 +154,12 @@ const Cart = () => {
   const [buttonLoad, setButtonLoad] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
 
-  // Delivery details state
   const [deliveryDetails, setDeliveryDetails] = useState({
     firstName: "",
     lastName: "",
     emailAddress: "",
     phoneNumber: "",
     completeAddress: "",
-  });
-
-  // Payment details state (if needed)
-  const [paymentDetails, setPaymentDetails] = useState({
-    cardNumber: "",
-    expiryDate: "",
-    cvv: "",
-    cardHolder: "",
   });
 
   const getProducts = async () => {
@@ -225,18 +216,29 @@ const Cart = () => {
       dispatch(openSnackbar({ message: "Order placed successfully", severity: "success" }));
       setOrderSuccess(true);
       setProducts([]);
-    } catch (err) {
+    } catch {
       dispatch(openSnackbar({ message: "Failed to place order", severity: "error" }));
     } finally {
       setButtonLoad(false);
     }
   };
 
+  const addItem = async (id) => {
+    await addToCart(localStorage.getItem("krist-app-token"), { productId: id, quantity: 1 });
+    setReload(!reload);
+  };
+
+  const removeItem = async (id, quantity, full = false) => {
+    const token = localStorage.getItem("krist-app-token");
+    let q = full ? null : 1;
+    await deleteFromCart(token, { productId: id, quantity: q });
+    setReload(!reload);
+  };
+
   if (orderSuccess) {
     return (
       <Container>
         <Section>
-          {/* Success UI */}
           <h2>🎉 Order Placed Successfully!</h2>
         </Section>
       </Container>
@@ -277,9 +279,9 @@ const Cart = () => {
                     <TableItem>₹{item.product.price.org}</TableItem>
                     <TableItem>
                       <Counter>
-                        <div onClick={() => deleteFromCart("...")} style={{ cursor: "pointer" }}>-</div>
-                        {item.quantity}
-                        <div onClick={() => addToCart(item.product._id)} style={{ cursor: "pointer" }}>+</div>
+                        <div onClick={() => removeItem(item.product._id, item.quantity)} style={{ cursor: "pointer" }}>-</div>
+                        <span>{item.quantity}</span>
+                        <div onClick={() => addItem(item.product._id)} style={{ cursor: "pointer" }}>+</div>
                       </Counter>
                     </TableItem>
                     <TableItem>
@@ -288,7 +290,7 @@ const Cart = () => {
                     <TableItem>
                       <DeleteOutline
                         sx={{ color: "red" }}
-                        onClick={() => removeFromCart("...")}
+                        onClick={() => removeItem(item.product._id, item.quantity, true)}
                       />
                     </TableItem>
                   </Table>
@@ -300,15 +302,15 @@ const Cart = () => {
                 </Subtotal>
                 <Delivery>
                   Delivery Details:
-                  {/* TextInput fields here */}
+                  <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+                    <TextInput small placeholder="First Name" value={deliveryDetails.firstName} handleChange={e => setDeliveryDetails({ ...deliveryDetails, firstName: e.target.value })} />
+                    <TextInput small placeholder="Last Name" value={deliveryDetails.lastName} handleChange={e => setDeliveryDetails({ ...deliveryDetails, lastName: e.target.value })} />
+                  </div>
+                  <TextInput small placeholder="Email Address" value={deliveryDetails.emailAddress} handleChange={e => setDeliveryDetails({ ...deliveryDetails, emailAddress: e.target.value })} />
+                  <TextInput small placeholder="Phone Number" value={deliveryDetails.phoneNumber} handleChange={e => setDeliveryDetails({ ...deliveryDetails, phoneNumber: e.target.value })} />
+                  <TextInput small textArea rows="4" placeholder="Complete Address" value={deliveryDetails.completeAddress} handleChange={e => setDeliveryDetails({ ...deliveryDetails, completeAddress: e.target.value })} />
                 </Delivery>
-                <Button
-                  text="Place Order"
-                  small
-                  isLoading={buttonLoad}
-                  isDisabled={buttonLoad}
-                  onClick={handlePlaceOrder}
-                />
+                <Button text="Place Order" small isLoading={buttonLoad} isDisabled={buttonLoad} onClick={handlePlaceOrder} />
               </Right>
             </Wrapper>
           )}

@@ -1,3 +1,4 @@
+// src/pages/TrackOrders.jsx
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
@@ -110,7 +111,9 @@ const TrackOrders = () => {
             <ProductsList>
               {(order.products || []).map((item, idx) => (
                 <ProductRow key={idx}>
-                  {item.product?.img && <Thumb src={item.product.img} alt={item.product.title} />}
+                  {item.product?.img && (
+                    <Thumb src={item.product.img} alt={item.product.title} />
+                  )}
                   <div>
                     <div style={{ fontWeight: 500 }}>
                       {item.product?.title || item.product?.name || "Unknown"}
@@ -122,7 +125,8 @@ const TrackOrders = () => {
             </ProductsList>
           </Row>
           <Row>
-            <strong>Total:</strong> ₹{order.total_amount?.$numberDecimal ?? order.total_amount ?? "0.00"}
+            <strong>Total:</strong> ₹
+            {order.total_amount?.$numberDecimal ?? order.total_amount ?? "0.00"}
           </Row>
           <Row><strong>Status:</strong> {order.status || "N/A"}</Row>
           <Row>
