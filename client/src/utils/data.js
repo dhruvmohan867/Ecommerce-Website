@@ -1,6 +1,6 @@
 export const category = [
   {
-    img: "https://jaxsonmaximus.com/wp-content/uploads/2020/04/34394c211f01e58539f91e79e6ce1420.jpg",
+    img: "https://naturalselectionlondon.com/wp-content/uploads/2022/07/How-To-Wear-The-Smart-Casual-Dress-Code-For-Men.jpg",
     name: "Casual Wear",
     off: "20-40% OFF",
   },
