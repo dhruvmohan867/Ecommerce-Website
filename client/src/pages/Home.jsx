@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import HeaderImage from "../utils/Images/Pogo.webp";
+// import HeaderImage from "../utils/Images/Pogo.webp";
 import { category } from "../utils/data.js";
 import ProductCategoryCard from "../components/cards/ProductCategoryCard.jsx";
 import ProductCard from "../components/cards/ProductCard.jsx";
@@ -74,7 +74,7 @@ const Home = () => {
           alignItems: "center",
         }}
       >
-        <Img src={HeaderImage} />
+        <Img src="/Pogo.webp"/>
       </Section>
       <Section>
         <Title>Shop by Categories</Title>
