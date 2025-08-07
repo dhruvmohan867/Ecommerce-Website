@@ -36,7 +36,7 @@ export const lightTheme = {
 export const darkTheme = {
   bg: "#121212",
   // bgLight: "#1e1e1e",
-  primary: "#e2e8f0",
+  // primary: "#e2e8f0",
   secondary: "#63b3ed",
   disabled: "#718096",
   // // menubar: "#1a202c",
