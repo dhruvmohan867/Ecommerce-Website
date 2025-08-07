@@ -1,5 +1,5 @@
 import { CircularProgress, Rating } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import styled from "styled-components";
 import Button from "../components/Button.jsx";
 import { FavoriteBorder, FavoriteRounded } from "@mui/icons-material";
@@ -138,15 +138,15 @@ const ProductDetails = () => {
   const [favoriteLoading, setFavoriteLoading] = useState(false);
   const [cartLoading, setCartLoading] = useState(false);
 
-  const getProduct = async () => {
-    setLoading(true);
-    try {
-      const res = await getProductDetails(id);
-      setProduct(res.data);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const getProduct = useCallback(async () => {
+  setLoading(true);
+  try {
+    const res = await getProductDetails(id);
+    setProduct(res.data);
+  } finally {
+    setLoading(false);
+  }
+}, [id]);
 
   const addFavorite = async () => {
     setFavoriteLoading(true);
@@ -227,7 +227,7 @@ const ProductDetails = () => {
 
   useEffect(() => {
     getProduct();
-  }, [id]);
+  }, [getProduct]);
 
   return (
     <Container>

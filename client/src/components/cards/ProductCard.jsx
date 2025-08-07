@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { CircularProgress, Rating } from "@mui/material";
 import styled from "styled-components";
@@ -93,8 +93,6 @@ const Rate = styled.div`
 `;
 
 const Details = styled.div`
-import { useDispatch } from "react-redux";
-import { openSnackbar } from "../../redux/reducers/snackbarSlice";
   display: flex;
   gap: 6px;
   flex-direction: column;
@@ -143,43 +141,43 @@ const ProductCard = ({ product }) => {
   const addFavorite = async () => {
     setFavoriteLoading(true);
     const token = localStorage.getItem("krist-app-token");
-    await addToFavorite(token, { productID: product?._id })
-      .then((res) => {
+    await addToFavorite(token, { productId: product?._id })
+      .then(() => {
         setFavorite(true);
-        setFavoriteLoading(false);
       })
       .catch((err) => {
-        setFavoriteLoading(false);
         dispatch(
           openSnackbar({
             message: err.message,
             severity: "error",
           })
         );
-      });
+      })
+      .finally(() => setFavoriteLoading(false));
   };
+
   const removeFavorite = async () => {
     setFavoriteLoading(true);
     const token = localStorage.getItem("krist-app-token");
-    await deleteFromFavorite(token, { productID: product?._id })
-      .then((res) => {
+    await deleteFromFavorite(token, { productId: product?._id })
+      .then(() => {
         setFavorite(false);
-        setFavoriteLoading(false);
       })
       .catch((err) => {
-        setFavoriteLoading(false);
         dispatch(
           openSnackbar({
             message: err.message,
             severity: "error",
           })
         );
-      });
+      })
+      .finally(() => setFavoriteLoading(false));
   };
+
   const addCart = async () => {
     const token = localStorage.getItem("krist-app-token");
     await addToCart(token, { productId: product?._id, quantity: 1 })
-      .then((res) => {
+      .then(() => {
         navigate("/cart");
       })
       .catch((err) => {
@@ -191,31 +189,33 @@ const ProductCard = ({ product }) => {
         );
       });
   };
-  const checkFavourite = async () => {
+
+  // Use useCallback to avoid useEffect warning
+  const checkFavourite = useCallback(async () => {
     setFavoriteLoading(true);
     const token = localStorage.getItem("krist-app-token");
-    await getFavorite(token, { productId: product?._id })
+    await getFavorite(token)
       .then((res) => {
         const isFavorite = res.data?.some(
           (favorite) => favorite._id === product?._id
         );
         setFavorite(isFavorite);
-        setFavoriteLoading(false);
       })
       .catch((err) => {
-        setFavoriteLoading(false);
         dispatch(
           openSnackbar({
             message: err.message,
             severity: "error",
           })
         );
-      });
-  };
+      })
+      .finally(() => setFavoriteLoading(false));
+  }, [dispatch, product?._id]);
 
   useEffect(() => {
     checkFavourite();
-  }, []);
+  }, [checkFavourite]);
+
   return (
     <Card>
       <Top>
@@ -236,7 +236,7 @@ const ProductCard = ({ product }) => {
               </>
             )}
           </MenuItem>{" "}
-          <MenuItem onClick={() => addCart(product?.id)}>
+          <MenuItem onClick={() => addCart(product?._id)}>
             <AddShoppingCartOutlined
               sx={{ color: "inherit", fontSize: "20px" }}
             />
@@ -250,8 +250,8 @@ const ProductCard = ({ product }) => {
         <Title>{product?.title}</Title>
         <Desc>{product?.name}</Desc>
         <Price>
-          ₹{product?.price?.org} <Span>${product?.price?.mrp}</Span>
-          <Percent>${product?.price?.off}% Off</Percent>
+          ₹{product?.price?.org} <Span>₹{product?.price?.mrp}</Span>
+          <Percent>₹{product?.price?.off}% Off</Percent>
         </Price>
       </Details>
     </Card>
