@@ -278,7 +278,7 @@ const Navbar = ({ openAuth, setOpenAuth, currentUser, theme, setTheme }) => {
             <Navlink onClick={() => setIsOpen(!isOpen)} to="/shop">
               Shop
             </Navlink>
-            <Navlink onClick={() => setIsOpen(!isOpen)} to="/new_Arrivals">
+            <Navlink onClick={() => setIsOpen(!isOpen)} to="/new_arrivals">
               New Arrivals
             </Navlink>
             <Navlink onClick={() => setIsOpen(!isOpen)} to="/orders">
