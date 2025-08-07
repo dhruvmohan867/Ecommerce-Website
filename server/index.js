@@ -29,9 +29,13 @@ app.use("/api/products", ProductRoutes);
 // ✅ Serve React build folder
 app.use(express.static(path.join(__dirname, "../client/build")));
 
-// ✅ Catch-all route for SPA
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/build", "index.html"));
+// Serve React app for all other routes
+app.use((req, res, next) => {
+  if (req.method === "GET" && !req.path.startsWith("/api")) {
+    res.sendFile(path.join(__dirname, "client", "build", "index.html"));
+  } else {
+    next();
+  }
 });
 
 // ✅ Error handler
