@@ -21,12 +21,12 @@ const Left = styled.div`
   }
 `;
 
-const Logo = styled.img`
-  position: absolute;
-  top: 40px;
-  left: 60px;
-  z-index: 10;
-`;
+// const Logo = styled.img`
+//   position: absolute;
+//   top: 40px;
+//   left: 60px;
+//   z-index: 10;
+// `;
 const Image = styled.img`
   position: relative;
   height: 100%;

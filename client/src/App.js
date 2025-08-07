@@ -10,7 +10,7 @@ import Cart from "./pages/Cart.jsx";
 import ProductDetails from "./pages/ProductDetails.jsx";
 import ToastMessage from "./components/ToastMessage.jsx";
 import TrackOrders from "./pages/TrackOrders.jsx";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import NewArrival from "./pages/NewArrival.jsx";
 

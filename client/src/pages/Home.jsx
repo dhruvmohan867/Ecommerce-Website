@@ -53,7 +53,7 @@ const CardWrapper = styled.div`
 `;
 
 const Home = () => {
-  const [loading, setLoading] = useState(false);
+  const [,setLoading] = useState(false);
   const [products, setProducts] = useState([]);
 
   const getProducts = async () => {
