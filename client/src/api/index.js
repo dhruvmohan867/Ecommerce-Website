@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useEffect } from "react";
 
 const API = axios.create({
   baseURL: "https://ecommerce-website-6qhx.onrender.com/api/",
@@ -61,3 +62,48 @@ export const getOrders = async (token) =>
   await API.get(`/user/orders/`, {
     headers: { Authorization: `Bearer ${token}` },
   });
+
+useEffect(() => {
+  getProduct();
+}, [getProduct]);
+
+useEffect(() => {
+  if (!product) return;
+  setFavoriteLoading(true);
+  const token = localStorage.getItem("krist-app-token");
+  getFavorite(token)
+    .then((res) => {
+      const isFavorite = res.data?.some(
+        (fav) => fav._id === product._id
+      );
+      setFavorite(isFavorite);
+    })
+    .catch((err) => {
+      dispatch(
+        openSnackbar({
+          message: err.message,
+          severity: "error",
+        })
+      );
+    })
+    .finally(() => setFavoriteLoading(false));
+}, [product, dispatch]);
+
+useEffect(() => {
+  (async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("krist-app-token");
+      const data = await getOrders(token);
+      setOrders(Array.isArray(data) ? data : data.orders || []);
+    } catch {
+      setOrders([]);
+    } finally {
+      setLoading(false);
+    }
+  })();
+}, []);
+
+useEffect(() => {
+  checkFavourite();
+}, [checkFavourite]);
