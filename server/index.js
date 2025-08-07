@@ -29,13 +29,11 @@ app.use("/api/products", ProductRoutes);
 // ✅ Serve React build folder
 app.use(express.static(path.join(__dirname, "../client/build")));
 
-// Serve React app for all other routes
-app.use((req, res, next) => {
-  if (req.method === "GET" && !req.path.startsWith("/api")) {
-    res.sendFile(path.join(__dirname, "client", "build", "index.html"));
-  } else {
-    next();
-  }
+// Catch-all handler: for any request that doesn't match an API route, send back React's index.html file.
+app.get("*", (req, res) => {
+  // If the request starts with /api, skip this handler
+  if (req.path.startsWith("/api")) return res.status(404).send("API route not found");
+  res.sendFile(path.join(__dirname, "client", "build", "index.html"));
 });
 
 // ✅ Error handler
