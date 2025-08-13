@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-// import HeaderImage from "../utils/Images/Pogo.webp";
 import { category } from "../utils/data.js";
 import ProductCategoryCard from "../components/cards/ProductCategoryCard.jsx";
 import ProductCard from "../components/cards/ProductCard.jsx";
@@ -53,43 +52,55 @@ const CardWrapper = styled.div`
 `;
 
 const Home = () => {
-  const [,setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
+  const [error, setError] = useState(null);
 
- const getProducts = async () => {
+  const getProducts = async () => {
     setLoading(true);
-    await getAllProducts().then((res) => {
-      setProducts(res.data);
+    setError(null);
+    try {
+      const res = await getAllProducts();
+      setProducts(res.data.products || []);
+    } catch (err) {
+      setError("Failed to load products.");
+      setProducts([]);
+    } finally {
       setLoading(false);
-    });
+    }
   };
 
   useEffect(() => {
     getProducts();
   }, []);
+
   return (
     <Container>
-      <Section
-        style={{
-          alignItems: "center",
-        }}
-      >
-        <Img src="/Pogo.webp"/>
+      <Section style={{ alignItems: "center" }}>
+        <Img src="/Pogo.webp" alt="Header" />
       </Section>
       <Section>
         <Title>Shop by Categories</Title>
         <CardWrapper>
-          {category.map((category) => (
-            <ProductCategoryCard category={category} />
+          {category.map((cat) => (
+            <ProductCategoryCard key={cat.name} category={cat} />
           ))}
         </CardWrapper>
       </Section>
       <Section>
         <Title center>Our Bestseller</Title>
         <CardWrapper>
-          {products.map((product) => (
-            <ProductCard product={product} />
-          ))}
+          {loading ? (
+            <div>Loading...</div>
+          ) : error ? (
+            <div style={{ color: "red" }}>{error}</div>
+          ) : products.length === 0 ? (
+            <div>No products found.</div>
+          ) : (
+            products.map((product) => (
+              <ProductCard key={product._id} product={product} />
+            ))
+          )}
         </CardWrapper>
       </Section>
     </Container>

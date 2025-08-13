@@ -259,3 +259,7 @@ const ProductCard = ({ product }) => {
 };
 
 export default ProductCard;
+
+{products.map((product) => (
+  <ProductCard key={product._id} product={product} />
+))}
