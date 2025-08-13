@@ -52,39 +52,46 @@ export const getAllOrders = async (req, res, next) => {
 };
 export const getproducts = async (req, res, next) => {
   try {
-    let { categories, minPrice, maxPrice, sizes, search } = req.query;
+    let { categories, minPrice, maxPrice, sizes, search, page = 1, limit = 12 } = req.query;
     sizes = sizes?.split(",");
     categories = categories?.split(",");
+    page = parseInt(page);
+    limit = parseInt(limit);
 
     const filter = {};
 
-    if (categories && Array.isArray(categories)) {
-      filter.category = { $in: categories }; // Match products in any of the specified categories
+    if (categories && Array.isArray(categories) && categories[0]) {
+      filter.category = { $in: categories };
     }
 
     if (minPrice || maxPrice) {
       filter["price.org"] = {};
-      if (minPrice) {
-        filter["price.org"]["$gte"] = parseFloat(minPrice);
-      }
-      if (maxPrice) {
-        filter["price.org"]["$lte"] = parseFloat(maxPrice);
-      }
+      if (minPrice) filter["price.org"]["$gte"] = parseFloat(minPrice);
+      if (maxPrice) filter["price.org"]["$lte"] = parseFloat(maxPrice);
     }
 
-    if (sizes && Array.isArray(sizes)) {
-      filter.sizes = { $in: sizes }; // Match products in any of the specified sizes
+    if (sizes && Array.isArray(sizes) && sizes[0]) {
+      filter.sizes = { $in: sizes };
     }
 
     if (search) {
       filter.$or = [
-        { title: { $regex: new RegExp(search, "i") } }, // Case-insensitive title search
-        { desc: { $regex: new RegExp(search, "i") } }, // Case-insensitive description search
+        { title: { $regex: new RegExp(search, "i") } },
+        { desc: { $regex: new RegExp(search, "i") } },
       ];
     }
 
-    const products = await Product.find(filter);
-    return res.status(200).json(products);
+    const total = await Product.countDocuments(filter);
+    const products = await Product.find(filter)
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    return res.status(200).json({
+      products,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    });
   } catch (err) {
     next(err);
   }

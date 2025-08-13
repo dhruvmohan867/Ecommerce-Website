@@ -219,7 +219,7 @@ const ProductCard = ({ product }) => {
   return (
     <Card>
       <Top>
-        <Image src={product?.img} />
+        <Image src={product?.img} loading="lazy" />
         <Menu>
           <MenuItem
             onClick={() => (favorite ? removeFavorite() : addFavorite())}

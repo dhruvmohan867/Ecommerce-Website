@@ -236,7 +236,7 @@ const ProductDetails = () => {
       ) : (
         <Wrapper>
           <ImageWrapper>
-            <Image src={product?.img} />
+            <Image src={product?.img} loading="lazy" />
           </ImageWrapper>
           <Details>
             <div>

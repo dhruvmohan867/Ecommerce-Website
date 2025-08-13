@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import ProductCard from "../components/cards/ProductCard.jsx";
 import styled from "styled-components";
 import { filter } from "../utils/data.js";
-import { CircularProgress, Slider } from "@mui/material";
+import { CircularProgress, Slider, Pagination } from "@mui/material";
 import { getAllProducts } from "../api/index.js";
 
 // --- Styled components ---
@@ -98,15 +98,17 @@ const maxPrice = 1000;
 const ShopListing = () => {
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
-  // Controlled price filter for API (after user commits changes)
   const [priceRange, setPriceRange] = useState([minPrice, maxPrice]);
-  // Temporary UI state for slider thumb as you drag
   const [pendingRange, setPendingRange] = useState([minPrice, maxPrice]);
   const [selectedSizes, setSelectedSizes] = useState(["S", "M", "L", "XL"]);
   const [selectedCategories, setSelectedCategories] = useState([
     "Men", "Women", "Kids", "Bags"
   ]);
   const [error, setError] = useState(null);
+
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   // Sync pendingRange whenever priceRange changes externally
   useEffect(() => {
@@ -118,16 +120,17 @@ const ShopListing = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await getAllProducts(
-        `minPrice=${priceRange[0]}&maxPrice=${priceRange[1]}${
-          selectedSizes.length > 0 ? `&sizes=${selectedSizes.join(",")}` : ""
-        }${
-          selectedCategories.length > 0
-            ? `&categories=${selectedCategories.join(",")}`
-            : ""
-        }`
-      );
-      setProducts(res.data);
+      const params = {
+        minPrice: priceRange[0],
+        maxPrice: priceRange[1],
+        sizes: selectedSizes.join(","),
+        categories: selectedCategories.join(","),
+        page,
+        limit: 12,
+      };
+      const res = await getAllProducts(params);
+      setProducts(res.data.products);
+      setTotalPages(res.data.totalPages);
     } catch (e) {
       setError("Failed to fetch products. Please try again.");
     } finally {
@@ -135,11 +138,11 @@ const ShopListing = () => {
     }
   };
 
-  // Refetch products when filters change
+  // Refetch products when filters or page change
   useEffect(() => {
     getFilteredProductsData();
     // eslint-disable-next-line
-  }, [priceRange, selectedSizes, selectedCategories]);
+  }, [priceRange, selectedSizes, selectedCategories, page]);
 
   return (
     <Container>
@@ -210,17 +213,27 @@ const ShopListing = () => {
         ) : error ? (
           <div style={{ color: "red", textAlign: "center" }}>{error}</div>
         ) : (
-          <CardWrapper>
-            {products && products.length > 0 ? (
-              products.map((product) => (
-                <ProductCard key={product._id} product={product} />
-              ))
-            ) : (
-              <div style={{ color: "#888", textAlign: "center", margin: "20px auto" }}>
-                No products found.
-              </div>
-            )}
-          </CardWrapper>
+          <>
+            <CardWrapper>
+              {products && products.length > 0 ? (
+                products.map((product) => (
+                  <ProductCard key={product._id} product={product} />
+                ))
+              ) : (
+                <div style={{ color: "#888", textAlign: "center", margin: "20px auto" }}>
+                  No products found.
+                </div>
+              )}
+            </CardWrapper>
+            <div style={{ display: "flex", justifyContent: "center", margin: "24px 0" }}>
+              <Pagination
+                count={totalPages}
+                page={page}
+                onChange={(_, value) => setPage(value)}
+                color="primary"
+              />
+            </div>
+          </>
         )}
       </Products>
     </Container>

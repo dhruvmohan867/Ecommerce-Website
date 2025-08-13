@@ -56,7 +56,7 @@ const Home = () => {
   const [,setLoading] = useState(false);
   const [products, setProducts] = useState([]);
 
-  const getProducts = async () => {
+ const getProducts = async () => {
     setLoading(true);
     await getAllProducts().then((res) => {
       setProducts(res.data);
