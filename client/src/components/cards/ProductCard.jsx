@@ -219,6 +219,11 @@ const ProductCard = ({ product }) => {
 
   // Use useCallback to avoid useEffect warning
   const checkFavourite = useCallback(async () => {
+    // Only check if logged in
+    if (!currentUser) {
+      setFavorite(false);
+      return;
+    }
     setFavoriteLoading(true);
     const token = localStorage.getItem("krist-app-token");
     await getFavorite(token)
@@ -229,15 +234,20 @@ const ProductCard = ({ product }) => {
         setFavorite(isFavorite);
       })
       .catch((err) => {
-        dispatch(
-          openSnackbar({
-            message: err.message,
-            severity: "error",
-          })
-        );
+        // Don't show 403 error if not logged in
+        if (err.response && err.response.status === 403) {
+          setFavorite(false);
+        } else {
+          dispatch(
+            openSnackbar({
+              message: err.message,
+              severity: "error",
+            })
+          );
+        }
       })
       .finally(() => setFavoriteLoading(false));
-  }, [dispatch, product?._id]);
+  }, [dispatch, product?._id, currentUser]);
 
   useEffect(() => {
     checkFavourite();
