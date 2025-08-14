@@ -47,7 +47,6 @@ const Image = styled.img`
     height: 400px;
   }
 `;
-
 const Details = styled.div`
   display: flex;
   gap: 18px;
@@ -55,7 +54,6 @@ const Details = styled.div`
   padding: 4px 10px;
   flex: 1;
 `;
-
 const Title = styled.div`
   font-size: 28px;
   font-weight: 600;
@@ -91,7 +89,6 @@ const Percent = styled.div`
   font-weight: 500;
   color: green;
 `;
-
 const Sizes = styled.div`
   font-size: 18px;
   font-weight: 500;
@@ -125,7 +122,6 @@ const ButtonWrapper = styled.div`
   padding: 32px 0px;
   font-weight: 1000;
 `;
- 
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -139,19 +135,23 @@ const ProductDetails = () => {
   const [cartLoading, setCartLoading] = useState(false);
 
   const getProduct = useCallback(async () => {
-  setLoading(true);
-  try {
-    const res = await getProductDetails(id);
-    setProduct(res.data);
-  } finally {
-    setLoading(false);
-  }
-}, [id]);
+    setLoading(true);
+    try {
+      const res = await getProductDetails(id);
+      setProduct(res.data);
+    } finally {
+      setLoading(false);
+    }
+  }, [id]);
 
   const addFavorite = async () => {
-    setFavoriteLoading(true);
     const token = localStorage.getItem("krist-app-token");
-    await addToFavorite(token, { productId: product?._id }) // <-- fixed key
+    if (!token) {
+      alert("Please do login or sign up first");
+      return;
+    }
+    setFavoriteLoading(true);
+    await addToFavorite(token, { productId: product?._id })
       .then(() => {
         setFavorite(true);
       })
@@ -167,9 +167,13 @@ const ProductDetails = () => {
   };
 
   const removeFavorite = async () => {
-    setFavoriteLoading(true);
     const token = localStorage.getItem("krist-app-token");
-    await deleteFromFavorite(token, { productId: product?._id }) // <-- fixed key
+    if (!token) {
+      alert("Please do login or sign up first");
+      return;
+    }
+    setFavoriteLoading(true);
+    await deleteFromFavorite(token, { productId: product?._id })
       .then(() => {
         setFavorite(false);
       })
@@ -185,8 +189,12 @@ const ProductDetails = () => {
   };
 
   const addCart = async () => {
-    setCartLoading(true);
     const token = localStorage.getItem("krist-app-token");
+    if (!token) {
+      alert("Please do login or sign up first");
+      return;
+    }
+    setCartLoading(true);
     await addToCart(token, { productId: product?._id, quantity: 1 })
       .then(() => {
         navigate("/cart");
@@ -205,13 +213,12 @@ const ProductDetails = () => {
   // Check favorite status after product is loaded
   useEffect(() => {
     if (!product) return;
-    setFavoriteLoading(true);
     const token = localStorage.getItem("krist-app-token");
+    if (!token) return; // don't check if not logged in
+    setFavoriteLoading(true);
     getFavorite(token)
       .then((res) => {
-        const isFavorite = res.data?.some(
-          (fav) => fav._id === product._id
-        );
+        const isFavorite = res.data?.some((fav) => fav._id === product._id);
         setFavorite(isFavorite);
       })
       .catch((err) => {
@@ -270,11 +277,7 @@ const ProductDetails = () => {
                 isLoading={cartLoading}
                 onClick={() => addCart()}
               />
-              <Button
-                text="Buy Now"
-                full
-                onClick={() => addCart()}
-              />
+              <Button text="Buy Now" full onClick={() => addCart()} />
               <Button
                 leftIcon={
                   favorite ? (
@@ -286,7 +289,9 @@ const ProductDetails = () => {
                 full
                 outlined
                 isLoading={favoriteLoading}
-                onClick={() => (favorite ? removeFavorite() : addFavorite())}
+                onClick={() =>
+                  favorite ? removeFavorite() : addFavorite()
+                }
               />
             </ButtonWrapper>
           </Details>
