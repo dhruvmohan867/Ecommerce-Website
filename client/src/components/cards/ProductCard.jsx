@@ -145,9 +145,9 @@ const ProductCard = ({ product }) => {
   // const [openAuth, setOpenAuth] = useState(false); // If you want to use modal
 
   const requireLogin = () => {
-    // If you want a popup modal, call setOpenAuth(true) here instead of alert
-    alert("Please sign in or log in first.");
-    // setOpenAuth(true);
+    alert("Please do signin or login first.");
+    // Or use your snackbar:
+    // dispatch(openSnackbar({ message: "Please do signin or login first.", severity: "warning" }));
   };
 
   const addFavorite = async () => {
@@ -159,12 +159,16 @@ const ProductCard = ({ product }) => {
         setFavorite(true);
       })
       .catch((err) => {
-        dispatch(
-          openSnackbar({
-            message: err.message,
-            severity: "error",
-          })
-        );
+        if (err.response && err.response.status === 403) {
+          requireLogin();
+        } else {
+          dispatch(
+            openSnackbar({
+              message: err.message,
+              severity: "error",
+            })
+          );
+        }
       })
       .finally(() => setFavoriteLoading(false));
   };
@@ -178,12 +182,16 @@ const ProductCard = ({ product }) => {
         setFavorite(false);
       })
       .catch((err) => {
-        dispatch(
-          openSnackbar({
-            message: err.message,
-            severity: "error",
-          })
-        );
+        if (err.response && err.response.status === 403) {
+          requireLogin();
+        } else {
+          dispatch(
+            openSnackbar({
+              message: err.message,
+              severity: "error",
+            })
+          );
+        }
       })
       .finally(() => setFavoriteLoading(false));
   };
@@ -196,12 +204,16 @@ const ProductCard = ({ product }) => {
         navigate("/cart");
       })
       .catch((err) => {
-        dispatch(
-          openSnackbar({
-            message: err.message,
-            severity: "error",
-          })
-        );
+        if (err.response && err.response.status === 403) {
+          requireLogin();
+        } else {
+          dispatch(
+            openSnackbar({
+              message: err.message,
+              severity: "error",
+            })
+          );
+        }
       });
   };
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ProductCard from "../components/cards/ProductCard.jsx";
-import styled from "styled-components";
+import styled, { useTheme } from "styled-components";
 import { filter } from "../utils/data.js";
 import { CircularProgress, Slider, Pagination } from "@mui/material";
 import { getAllProducts } from "../api/index.js";
@@ -109,6 +109,8 @@ const ShopListing = () => {
   // Pagination state
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+
+  const theme = useTheme();
 
   // Sync pendingRange whenever priceRange changes externally
   useEffect(() => {
@@ -231,6 +233,18 @@ const ShopListing = () => {
                 page={page}
                 onChange={(_, value) => setPage(value)}
                 color="primary"
+                sx={{
+                  "& .MuiPaginationItem-root": {
+                    color: theme.bg === "#121212" ? "#fff" : "#222", // text color
+                    backgroundColor: theme.bg === "#121212" ? "#222" : "#fff", // background
+                    border: "1px solid #888",
+                  },
+                  "& .Mui-selected": {
+                    color: theme.bg === "#121212" ? "#222" : "#fff",
+                    backgroundColor: theme.bg === "#121212" ? "#fff" : "#222",
+                    border: "1px solid #888",
+                  },
+                }}
               />
             </div>
           </>
