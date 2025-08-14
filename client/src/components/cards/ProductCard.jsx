@@ -13,7 +13,7 @@ import {
   deleteFromFavorite,
   getFavorite,
 } from "../../api";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { openSnackbar } from "../../redux/reducers/snackbarSlice";
 
 const Card = styled.div`
@@ -138,7 +138,20 @@ const ProductCard = ({ product }) => {
   const [favorite, setFavorite] = useState(false);
   const [favoriteLoading, setFavoriteLoading] = useState(false);
 
+  // 👇 Add this line to get currentUser from Redux
+  const currentUser = useSelector((state) => state.user.currentUser);
+
+  // 👇 Add this line to control auth modal (if you want to open modal instead of alert)
+  // const [openAuth, setOpenAuth] = useState(false); // If you want to use modal
+
+  const requireLogin = () => {
+    // If you want a popup modal, call setOpenAuth(true) here instead of alert
+    alert("Please sign in or log in first.");
+    // setOpenAuth(true);
+  };
+
   const addFavorite = async () => {
+    if (!currentUser) return requireLogin();
     setFavoriteLoading(true);
     const token = localStorage.getItem("krist-app-token");
     await addToFavorite(token, { productId: product?._id })
@@ -157,6 +170,7 @@ const ProductCard = ({ product }) => {
   };
 
   const removeFavorite = async () => {
+    if (!currentUser) return requireLogin();
     setFavoriteLoading(true);
     const token = localStorage.getItem("krist-app-token");
     await deleteFromFavorite(token, { productId: product?._id })
@@ -175,6 +189,7 @@ const ProductCard = ({ product }) => {
   };
 
   const addCart = async () => {
+    if (!currentUser) return requireLogin();
     const token = localStorage.getItem("krist-app-token");
     await addToCart(token, { productId: product?._id, quantity: 1 })
       .then(() => {
@@ -236,7 +251,7 @@ const ProductCard = ({ product }) => {
               </>
             )}
           </MenuItem>{" "}
-          <MenuItem onClick={() => addCart(product?._id)}>
+          <MenuItem onClick={addCart}>
             <AddShoppingCartOutlined
               sx={{ color: "inherit", fontSize: "20px" }}
             />
