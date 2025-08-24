@@ -100,6 +100,7 @@ Ecommerce-Website-main/
      - Node.js(>= 14.x recommended)
      - npm or yarn package manager
  
+---
 
 
 ## 🧑‍💻 How to Run Locally
@@ -129,7 +130,7 @@ Runs on: http://localhost:5000
 
 
 ### 📸 Screenshots
-
+![Home](https://ecommerce-website-frontend3.onrender.com/Pogo.webp)
 
 
 🧾 License
