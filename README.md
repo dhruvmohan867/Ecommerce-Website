@@ -80,11 +80,27 @@ Ecommerce-Website-main/
 
 ## 🛠️ Tech Stack
 
-- **Frontend:** React.js, JavaScript, JSX, CSS  
-- **Styling:** Basic CSS  
-- **Backend (Placeholder):** Axios-ready for Express or Node.js APIs
+- **Frontend:**
+     - ⚛️ React.js
+     - 📦 Redux Toolkit
+     - 🎨 CSS (Responsive Design)
+- **Backend:**
+     - 🟢 Node.js
+     - 🚏 Express.js
+     - 🍃 MongoDB (via Mongoose models included)
+- **Others:**
+     - 🌐 Axios (API calls)
+     - 🔑 JWT (token-based authentication placeholder)
 
 ---
+
+
+## ⚡ Prerequisites
+- Make sure you have installed:
+     - Node.js(>= 14.x recommended)
+     - npm or yarn package manager
+ 
+
 
 ## 🧑‍💻 How to Run Locally
 
@@ -92,16 +108,28 @@ Ecommerce-Website-main/
 
    ```bash
    git clone https://github.com/your-username/ecommerce-website.git
+   cd ecommerce-website
+   ```
 
-Navigate to the client directory and install dependencies:
-
-cd Ecommerce-Website/client
-npm install
-
-Start the development server:
-npm start
+# Setup client (frontend):
+```bash
+  npm install
+  npm start
+```
 
 Visit http://localhost:3000 to view the app.
+
+# Setup server (backend):
+```bash
+ cd ../server
+ npm install
+ npm start
+```
+Runs on: http://localhost:5000
+
+
+### 📸 Screenshots
+
 
 
 🧾 License
