@@ -131,26 +131,13 @@ Runs on: http://localhost:5000
 
 ### 📸 Screenshots
 ![Home](https://ecommerce-website-frontend3.onrender.com/Pogo.webp)
+![Product-Page]()
 
 
 🧾 License
-This project is open-source and available under the MIT License.
+This project is open-source and available under the MIT [LICENSE](./Licence).
 
 ---
-
-<!--### ✅ Changes made:
-- Fixed inconsistent headers and spacing
-- Used code blocks properly
-- Formatted file structure section
-- Cleaned up the steps under "How to Run Locally"
-- Added horizontal rules (`---`) for clean separation
-
-Let me know if you want to add:
-- Live demo link
-- Environment variables section
-- Deployment instructions (Render, Vercel, Netlify)
-
-Want a badge (like "Built with React") at the top too? I can add that!-->
 
 
 
