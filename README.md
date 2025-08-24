@@ -1,4 +1,4 @@
-### 🛒 E-commerce Website
+# 🛒 E-commerce Website
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./Licence) 
 [![React](https://img.shields.io/badge/Frontend-React.js-61DAFB?logo=react)](https://reactjs.org/) 
@@ -12,7 +12,7 @@ It’s **modular, responsive, and extendable**, making it ideal for **learning, 
 
 ---
 
-### 📑 Table of Contents
+# 📑 Table of Contents
 - [🚀 Features](#-features)  
 - [📁 Project Structure](#-project-structure)  
 - [🛠️ Tech Stack](#️-tech-stack)  
@@ -24,7 +24,7 @@ It’s **modular, responsive, and extendable**, making it ideal for **learning, 
 
 ---
 
-### 🚀 Features
+# 🚀 Features
 
 - 🔐 **User Authentication** (Sign Up & Sign In)  
 - 🛍️ **Product Listing & Details Pages**  
@@ -36,7 +36,7 @@ It’s **modular, responsive, and extendable**, making it ideal for **learning, 
 
 ---
 
-### 📁 Project Structure
+# 📁 Project Structure
 
 ```bash
 Ecommerce-Website-main/
@@ -78,7 +78,7 @@ Ecommerce-Website-main/
 
 ---
 
-### 🛠️ Tech Stack
+# 🛠️ Tech Stack
 
 - **Frontend:**
      - ⚛️ React.js
@@ -95,7 +95,7 @@ Ecommerce-Website-main/
 ---
 
 
-### ⚡ Prerequisites
+# ⚡ Prerequisites
 - Make sure you have installed:
      - Node.js(>= 14.x recommended)
      - npm or yarn package manager
@@ -103,7 +103,7 @@ Ecommerce-Website-main/
 ---
 
 
-### 🧑‍💻 How to Run Locally
+# 🧑‍💻 How to Run Locally
 
 1. **Clone the repository:**
 
@@ -112,7 +112,7 @@ Ecommerce-Website-main/
    cd ecommerce-website
    ```
 
-## Setup client (frontend):
+### Setup client (frontend):
 ```bash
   npm install
   npm start
@@ -120,7 +120,7 @@ Ecommerce-Website-main/
 
 Visit http://localhost:3000 to view the app.
 
-## Setup server (backend):
+### Setup server (backend):
 ```bash
  cd ../server
  npm install
@@ -132,7 +132,7 @@ Runs on: http://localhost:5000
 
 
 
-### 📸 Screenshots
+# 📸 Screenshots
 <p align="center">
   <img src="https://ecommerce-website-frontend3.onrender.com/Pogo.webp" alt="Home Page" width="300"/>
   <img src="client/public/Shoppage.png" alt="Product Page" width="300"/>
@@ -142,7 +142,7 @@ Runs on: http://localhost:5000
 
 ---
 
-### 🤝 Contributing
+# 🤝 Contributing
 - Contributions are welcome! 🚀
 - To contribute:
    - Fork This Repo
@@ -161,12 +161,12 @@ Runs on: http://localhost:5000
 
 ---
 
-### 🧾 License
+# 🧾 License
 This project is open-source and available under the MIT [LICENSE](./Licence).
 
 ---
 
-### ⭐ Support
+# ⭐ Support
 
  If you like this project, don’t forget to star ⭐ the repository to show your support!
 
