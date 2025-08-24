@@ -18,14 +18,41 @@ An elegant and modern e-commerce platform built using **React.js**. This applica
 ## 📁 Project Structure
 
 
-
-Ecommerce-Website/
-├── client/               # React Frontend
-│   ├── public/           # Static assets
-│   └── src/              # React components and API logic
-│       ├── api/          # API calls
-│       └── components/   # Button, Navbar, Auth Forms, etc.
-└── README.md             # Project Documentation
+```bash
+Ecommerce-Website-main/
+├── client/
+│   ├── public/ 
+│   └── src/
+│       ├── api/
+│       ├── components/
+│       │   └── cards/
+│       ├── pages/
+│       ├── redux/
+│       │   └── reducers/
+│       ├── utils/
+│       │   └── Images/
+│       ├── App.js
+│       ├── index.css
+│       └── index.js
+│   ├── README.md
+│   ├── package.json
+│   ├── package-lock.json
+│   └── static.json
+│
+├── server/
+│   ├── controllers/
+│   ├── middleware/
+│   ├── models/
+│   ├── routes/
+│   ├── error.js
+│   ├── index.js
+│   ├── package.json
+│   └── package-lock.json
+│
+├── .gitignore
+├── README.md
+├── image.png
+```
 
 
 ---
