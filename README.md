@@ -1,9 +1,9 @@
 ## 🛒 E-commerce Website
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)  
-[![React](https://img.shields.io/badge/Frontend-React.js-61DAFB?logo=react)](https://reactjs.org/)  
-[![Node.js](https://img.shields.io/badge/Backend-Node.js-339933?logo=node.js)](https://nodejs.org/)  
-[![MongoDB](https://img.shields.io/badge/Database-MongoDB-4DB33D?logo=mongodb)](https://www.mongodb.com/)  
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./Licence) 
+[![React](https://img.shields.io/badge/Frontend-React.js-61DAFB?logo=react)](https://reactjs.org/) 
+[![Node.js](https://img.shields.io/badge/Backend-Node.js-339933?logo=node.js)](https://nodejs.org/) 
+[![MongoDB](https://img.shields.io/badge/Database-MongoDB-4DB33D?logo=mongodb)](https://www.mongodb.com/)
 
 An elegant and modern **e-commerce platform** built with **React.js** & **Node.js**.  
 This application allows users to register, sign in, browse products, add to cart, and prepare for checkout.  
@@ -128,19 +128,47 @@ Visit http://localhost:3000 to view the app.
 ```
 Runs on: http://localhost:5000
 
+---
+
+
 
 ### 📸 Screenshots
-![Home](https://ecommerce-website-frontend3.onrender.com/Pogo.webp)
-![Product-Page]()
+<p align="center">
+  <img src="https://ecommerce-website-frontend3.onrender.com/Pogo.webp" alt="Home Page" width="300"/>
+  <img src="client/public/Shoppage.png" alt="Product Page" width="300"/>
+  <img src="client/public/Loginpage.png" alt="Login Page" width="300"/>
+  <img src="client/public/Cartpage.png" alt="Cart Page" width="300"/>
+</p>
 
+---
+
+### 🤝 Contributing
+- Contributions are welcome! 🚀
+- To contribute:
+   - Fork This Repo
+   - Create Your Feature Branch
+  ```bash
+   git checkout -b feature/awesome-feature
+  ```
+  - Commit Your Changes
+   ```bash
+   git commit -m 'Add new feature'
+
+   ```
+ - Push To Your Branch & Open a Pull Request
+
+
+
+---
 
 🧾 License
 This project is open-source and available under the MIT [LICENSE](./Licence).
 
 ---
 
+### ⭐ Support
 
-
+ If you like this project, don’t forget to star ⭐ the repository to show your support!
 
 
 
