@@ -13,14 +13,14 @@ It’s **modular, responsive, and extendable**, making it ideal for **learning, 
 ---
 
 # 📑 Table of Contents
--[📸 Screenshots](#screenshits)
-- [🚀 Features](#-features)  
-- [📁 Project Structure](#project-structure)  
-- [🛠️ Tech Stack](#️tech-stack)  
-- [⚡ Prerequisites](#prerequisites)  
-- [🧑‍💻 Installation & Setup](#installation--setup)  
--  [🤝 Contributing](#contributing)  
-- [📜 License](#license)  
+ -[📸 Screenshots](#screenshits)
+ -[🚀 Features](#-features)  
+ -[📁 Project Structure](#project-structure)  
+ -[🛠️ Tech Stack](#️tech-stack)  
+ -[⚡ Prerequisites](#prerequisites)  
+ -[🧑‍💻 Installation & Setup](#installation--setup)  
+ -[🤝 Contributing](#contributing)  
+ -[📜 License](#license)  
 
 ---
 
