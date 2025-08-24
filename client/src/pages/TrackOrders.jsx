@@ -11,61 +11,170 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 18px;
 `;
 
 const Title = styled.h2`
   font-size: 28px;
-  margin-bottom: 30px;
+  margin-bottom: 6px;
   color: ${({ theme }) => theme.text_primary};
 `;
 
 const OrderCard = styled.div`
   width: 100%;
-  max-width: 800px;
+  max-width: 980px;
   background: ${({ theme }) => theme.card};
-  padding: 20px;
+  padding: 18px;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  margin-bottom: 20px;
-`;
-
-const Row = styled.div`
-  margin: 12px 0;
-  font-size: 16px;
-  color: ${({ theme }) => theme.text_secondary};
-`;
-
-const ProductsList = styled.div`
+  box-shadow: 0 6px 24px ${({ theme }) => theme.shadow};
+  margin-bottom: 8px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-top: 8px;
+  border: 1px solid ${({ theme }) => theme.border_color};
 `;
 
-const ProductRow = styled.div`
+const OrderHeader = styled.div`
   display: flex;
-  align-items: center;
+  justify-content: space-between;
+  align-items: flex-start;
   gap: 12px;
 `;
 
+const OrderId = styled.div`
+  font-weight: 700;
+  color: ${({ theme }) => theme.text_primary};
+  word-break: break-all;
+`;
+
+const StatusPill = styled.div`
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 13px;
+  color: ${({ theme }) => theme.buttonText};
+  background: ${({ theme }) => theme.primary};
+`;
+
+const ProductList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 6px;
+`;
+
+const ProductItem = styled.div`
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 12px;
+  border-radius: 10px;
+  transition: background 0.15s ease;
+  cursor: default;
+
+  &:hover {
+    background: ${({ theme }) => theme.bgLight + "10"};
+  }
+`;
+
 const Thumb = styled.img`
-  width: 60px;
-  height: 60px;
+  width: 84px;
+  height: 84px;
   object-fit: cover;
+  border-radius: 10px;
+  background: #f5f5f5;
+  flex-shrink: 0;
+`;
+
+const ProductInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+`;
+
+const ProductTitle = styled.div`
+  font-size: 16px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.text_primary};
+`;
+
+const ProductMeta = styled.div`
+  font-size: 14px;
+  color: ${({ theme }) => theme.text_secondary};
+`;
+
+const ProductRight = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+`;
+
+const QtyBadge = styled.div`
+  background: ${({ theme }) => theme.popup};
+  color: ${({ theme }) => theme.popup_text_primary};
+  padding: 6px 10px;
   border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  border: 1px solid ${({ theme }) => theme.border_color};
+`;
+
+const Price = styled.div`
+  font-weight: 700;
+  font-size: 16px;
+  color: ${({ theme }) => theme.text_primary};
+`;
+
+const Divider = styled.hr`
+  border: none;
+  border-top: 1px solid ${({ theme }) => theme.border_color};
+  margin: 6px 0;
+`;
+
+const OrderFooter = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+`;
+
+const FooterLeft = styled.div`
+  color: ${({ theme }) => theme.text_secondary};
+  font-size: 14px;
+`;
+
+const FooterRight = styled.div`
+  display: flex;
+  gap: 12px;
+  align-items: center;
+`;
+
+const TotalAmount = styled.div`
+  font-weight: 800;
+  font-size: 18px;
+  color: ${({ theme }) => theme.text_primary};
 `;
 
 const ShopButton = styled.button`
   padding: 10px 20px;
-  margin-top: 40px;
+  margin-top: 8px;
   border: none;
   background-color: ${({ theme }) => theme.primary};
   color: ${({ theme }) => theme.buttonText};
   font-size: 16px;
   border-radius: 8px;
   cursor: pointer;
-  &:hover { opacity: 0.9; }
+  &:hover { opacity: 0.95; }
 `;
+
+const formatAmount = (val) => {
+  if (val == null) return "0.00";
+  if (typeof val === "object" && val.$numberDecimal) return Number(val.$numberDecimal).toFixed(2);
+  return Number(val).toFixed(2);
+};
 
 const TrackOrders = () => {
   const navigate = useNavigate();
@@ -77,7 +186,7 @@ const TrackOrders = () => {
       setLoading(true);
       try {
         const token = localStorage.getItem("krist-app-token");
-        const res = await getOrders(token); // axios response
+        const res = await getOrders(token);
         const serverOrders = Array.isArray(res.data) ? res.data : res.data.orders || [];
         setOrders(serverOrders);
       } catch {
@@ -106,33 +215,43 @@ const TrackOrders = () => {
       <Title>Track Your Orders</Title>
       {orders.map((order) => (
         <OrderCard key={order._id}>
-          <Row><strong>Order ID:</strong> {order._id}</Row>
-          <Row>
-            <strong>Products:</strong>
-            <ProductsList>
-              {(order.products || []).map((item, idx) => (
-                <ProductRow key={idx}>
-                  {item.product?.img && (
-                    <Thumb src={item.product.img} alt={item.product.title} />
-                  )}
-                  <div>
-                    <div style={{ fontWeight: 500 }}>
-                      {item.product?.title || item.product?.name || "Unknown"}
-                    </div>
-                    <div>Quantity: {item.quantity}</div>
-                  </div>
-                </ProductRow>
-              ))}
-            </ProductsList>
-          </Row>
-          <Row>
-            <strong>Total:</strong> ₹
-            {order.total_amount?.$numberDecimal ?? order.total_amount ?? "0.00"}
-          </Row>
-          <Row><strong>Status:</strong> {order.status || "N/A"}</Row>
-          <Row>
-            <strong>Date:</strong> {order.createdAt ? new Date(order.createdAt).toLocaleString() : "—"}
-          </Row>
+          <OrderHeader>
+            <OrderId>Order ID: <span style={{ fontWeight: 500 }}>{order._id}</span></OrderId>
+            <StatusPill>{order.status || "N/A"}</StatusPill>
+          </OrderHeader>
+
+          <ProductList>
+            {(order.products || []).map((item) => {
+              const prod = item.product || {};
+              return (
+                <ProductItem key={prod._id || item.product}>
+                  <Thumb src={prod?.img || "/Pogo.webp"} alt={prod?.title || prod?.name || "Product"} onClick={() => prod._id && navigate(`/shop/${prod._id}`)} style={{ cursor: prod._id ? "pointer" : "default" }} />
+                  <ProductInfo>
+                    <ProductTitle>{prod?.title || prod?.name || "Unknown product"}</ProductTitle>
+                    <ProductMeta>{prod?.desc ? (prod.desc.substring(0, 100) + (prod.desc.length > 100 ? "..." : "")) : (prod?.category?.[0] || "")}</ProductMeta>
+                  </ProductInfo>
+                  <ProductRight>
+                    <QtyBadge>Qty: {item.quantity}</QtyBadge>
+                    <Price>₹{formatAmount(prod?.price?.org ?? 0)}</Price>
+                  </ProductRight>
+                </ProductItem>
+              );
+            })}
+          </ProductList>
+
+          <Divider />
+
+          <OrderFooter>
+            <FooterLeft>
+              <div><strong>Date:</strong> {order.createdAt ? new Date(order.createdAt).toLocaleString() : "—"}</div>
+              <div style={{ marginTop: 6, color: "inherit" }}>{order.address}</div>
+            </FooterLeft>
+
+            <FooterRight>
+              <TotalAmount>₹{formatAmount(order.total_amount)}</TotalAmount>
+              <ShopButton onClick={() => navigate("/shop")}>Continue Shopping</ShopButton>
+            </FooterRight>
+          </OrderFooter>
         </OrderCard>
       ))}
     </Container>
