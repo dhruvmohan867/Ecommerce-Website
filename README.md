@@ -1,4 +1,4 @@
- 🛒 E-commerce Website
+### 🛒 E-commerce Website
 
 An elegant and modern e-commerce platform built using **React.js**. This application allows users to register, sign in, browse through a catalog of items, and perform standard e-commerce interactions. The platform is modular, responsive, and ideal for learning or as a foundation for a real-world project.
 
