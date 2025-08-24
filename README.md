@@ -1,4 +1,4 @@
-### 🛒 E-commerce Website
+## 🛒 E-commerce Website
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)  
 [![React](https://img.shields.io/badge/Frontend-React.js-61DAFB?logo=react)](https://reactjs.org/)  
