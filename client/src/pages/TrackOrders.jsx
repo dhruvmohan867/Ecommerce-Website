@@ -77,8 +77,9 @@ const TrackOrders = () => {
       setLoading(true);
       try {
         const token = localStorage.getItem("krist-app-token");
-        const data = await getOrders(token);
-        setOrders(Array.isArray(data) ? data : data.orders || []);
+        const res = await getOrders(token); // axios response
+        const serverOrders = Array.isArray(res.data) ? res.data : res.data.orders || [];
+        setOrders(serverOrders);
       } catch {
         setOrders([]);
       } finally {

@@ -146,9 +146,12 @@ export const placeOrder = async (req, res, next) => {
   try {
     const { products, address, totalAmount } = req.body;
     const user = await User.findById(req.user.id);
-
+     const normalizedProducts = (products || []).map((p) => ({
+      product: p?.product?._id || p?.product,
+      quantity: p?.quantity || 1,
+    }));
     const order = new Orders({
-      products,
+      products: normalizedProducts,
       user: user._id,
       total_amount: totalAmount,
       address,
@@ -156,6 +159,8 @@ export const placeOrder = async (req, res, next) => {
     await order.save();
 
     user.cart = [];
+    user.orders = user.orders || [];
+    user.orders.push(order._id);
     await user.save();
 
     return res.status(200).json({ message: "Order placed successfully", order });
@@ -167,7 +172,9 @@ export const placeOrder = async (req, res, next) => {
 // ✅ GET USER ORDERS
 export const getAllOrders = async (req, res, next) => {
   try {
-    const orders = await Orders.find({ user: req.user.id });
+    const orders = await Orders.find({ user: req.user.id })
+      .populate("products.product")
+      .sort({ createdAt: -1 });
     return res.status(200).json(orders);
   } catch (err) {
     next(err);
