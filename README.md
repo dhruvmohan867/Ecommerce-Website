@@ -13,14 +13,24 @@ It’s **modular, responsive, and extendable**, making it ideal for **learning, 
 ---
 
 # 📑 Table of Contents
+-[📸 Screenshots](#-screenshits)
 - [🚀 Features](#-features)  
 - [📁 Project Structure](#-project-structure)  
 - [🛠️ Tech Stack](#️-tech-stack)  
 - [⚡ Prerequisites](#-prerequisites)  
 - [🧑‍💻 Installation & Setup](#-installation--setup)  
-- [📸 Screenshots](#-screenshots)  
-- [🤝 Contributing](#-contributing)  
+-  [🤝 Contributing](#-contributing)  
 - [📜 License](#-license)  
+
+---
+
+# 📸 Screenshots
+<p align="center">
+  <img src="https://ecommerce-website-frontend3.onrender.com/Pogo.webp" alt="Home Page" width="300"/>
+  <img src="client/public/Shoppage.png" alt="Product Page" width="300"/>
+  <img src="client/public/Loginpage.png" alt="Login Page" width="300"/>
+  <img src="client/public/Cartpage.png" alt="Cart Page" width="300"/>
+</p>
 
 ---
 
@@ -130,17 +140,6 @@ Runs on: http://localhost:5000
 
 ---
 
-
-
-# 📸 Screenshots
-<p align="center">
-  <img src="https://ecommerce-website-frontend3.onrender.com/Pogo.webp" alt="Home Page" width="300"/>
-  <img src="client/public/Shoppage.png" alt="Product Page" width="300"/>
-  <img src="client/public/Loginpage.png" alt="Login Page" width="300"/>
-  <img src="client/public/Cartpage.png" alt="Cart Page" width="300"/>
-</p>
-
----
 
 # 🤝 Contributing
 - Contributions are welcome! 🚀
