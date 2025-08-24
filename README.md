@@ -1,57 +1,78 @@
 ### 🛒 E-commerce Website
 
-An elegant and modern e-commerce platform built using **React.js**. This application allows users to register, sign in, browse through a catalog of items, and perform standard e-commerce interactions. The platform is modular, responsive, and ideal for learning or as a foundation for a real-world project.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)  
+[![React](https://img.shields.io/badge/Frontend-React.js-61DAFB?logo=react)](https://reactjs.org/)  
+[![Node.js](https://img.shields.io/badge/Backend-Node.js-339933?logo=node.js)](https://nodejs.org/)  
+[![MongoDB](https://img.shields.io/badge/Database-MongoDB-4DB33D?logo=mongodb)](https://www.mongodb.com/)  
+
+An elegant and modern **e-commerce platform** built with **React.js** & **Node.js**.  
+This application allows users to register, sign in, browse products, add to cart, and prepare for checkout.  
+
+It’s **modular, responsive, and extendable**, making it ideal for **learning, portfolio showcase, or real-world use**.  
+
+---
+
+## 📑 Table of Contents
+- [🚀 Features](#-features)  
+- [📁 Project Structure](#-project-structure)  
+- [🛠️ Tech Stack](#️-tech-stack)  
+- [⚡ Prerequisites](#-prerequisites)  
+- [🧑‍💻 Installation & Setup](#-installation--setup)  
+- [📸 Screenshots](#-screenshots)  
+- [🤝 Contributing](#-contributing)  
+- [📜 License](#-license)  
 
 ---
 
 ## 🚀 Features
 
-- 🔐 User Authentication (Sign Up & Sign In)
-- 🛍️ Product Listing Page
-- 🧭 Intuitive Navigation Bar
-- 🎨 Stylish and Responsive UI with reusable components
-- ⚙️ React Hooks and Context API
-- 📦 Backend-ready structure (API file included)
+- 🔐 **User Authentication** (Sign Up & Sign In)  
+- 🛍️ **Product Listing & Details Pages**  
+- 🧭 **Intuitive Navigation Bar**  
+- 🎨 **Responsive UI** with reusable React components  
+- ⚙️ **Redux Toolkit for State Management**  
+- 🖼️ **Static Assets & Theming**  
+- 📦 **Backend-ready** with Express & MongoDB models  
 
 ---
 
 ## 📁 Project Structure
 
-
 ```bash
 Ecommerce-Website-main/
-├── client/
-│   ├── public/ 
+├── client/                     # Frontend (React.js)
+│   ├── public/                 # Static assets (favicon, logos, manifest)
 │   └── src/
-│       ├── api/
-│       ├── components/
-│       │   └── cards/
-│       ├── pages/
-│       ├── redux/
-│       │   └── reducers/
-│       ├── utils/
-│       │   └── Images/
-│       ├── App.js
-│       ├── index.css
-│       └── index.js
+│       ├── api/                # API integration files
+│       ├── components/         # Reusable UI components
+│       │   └── cards/          # Product-related UI cards
+│       ├── pages/              # Page components (Home, Cart, Auth, etc.)
+│       ├── redux/              # Redux store & slices
+│       │   └── reducers/       # Reducer files
+│       ├── utils/              # Utility functions & constants
+│       │   └── Images/         # Project images
+│       ├── App.js              # Root App component
+│       ├── index.css           # Global styles
+│       └── index.js            # React entry point
 │   ├── README.md
 │   ├── package.json
 │   ├── package-lock.json
 │   └── static.json
 │
-├── server/
-│   ├── controllers/
-│   ├── middleware/
-│   ├── models/
-│   ├── routes/
-│   ├── error.js
-│   ├── index.js
+├── server/                     # Backend (Node.js / Express)
+│   ├── controllers/            # Business logic (Products, User)
+│   ├── middleware/             # Auth & token validation
+│   ├── models/                 # MongoDB models (Orders, Products, Users)
+│   ├── routes/                 # API routes
+│   ├── error.js                # Error handling
+│   ├── index.js                # Express app entry point
 │   ├── package.json
 │   └── package-lock.json
 │
 ├── .gitignore
 ├── README.md
-├── image.png
+├── image.png                   # Preview image / screenshot
+
 ```
 
 
