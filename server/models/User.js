@@ -5,15 +5,18 @@ const UserSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
+      index: true,
     },
     email: {
       type: String,
       required: true,
       unique: true,
+      index: true,
     },
     password: {
       type: String,
       required: true,
+
     },
     img: {
       type: String,
@@ -35,13 +38,13 @@ const UserSchema = new mongoose.Schema(
     },
     orders: {
       type: [mongoose.Schema.Types.ObjectId],
-      ref: "Shopping-Orders",
-      type: [mongoose.Schema.Types.ObjectId],
       ref: "Orders",
-      default: [],
+      
     },
   },
   { timestamps: true }
 );
+UserSchema.index({ email: 1 });
+UserSchema.index({ name: 1 });
 
 export default mongoose.model("User", UserSchema);

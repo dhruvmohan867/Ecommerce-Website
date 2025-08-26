@@ -5,7 +5,8 @@ import * as dotenv from "dotenv";
 import UserRouter from "./routes/User.js";
 import ProductRoutes from "./routes/Products.js";
 import path from "path";
-
+import compression from "compression";
+import helmet from "helmet";
 dotenv.config();
 
 const app = express();
@@ -19,15 +20,20 @@ app.use(cors({
 }));
 
 app.options("*", cors());
-app.use(express.json({ limit: "50mb" }));
+app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: true }));
+app.use(compression());
+app.use(helmet());
 
 // ✅ API routes first
 app.use("/api/user", UserRouter);
 app.use("/api/products", ProductRoutes);
 
 // ✅ Serve React build folder
-app.use(express.static(path.join(__dirname, "../client/build")));
+app.use(express.static(path.join(__dirname, "../client/build"), {
+  maxAge: "1d",   
+  etag: true
+}));
 
 // Catch-all handler: for any request that doesn't match an API route, send back React's index.html file.
 app.get("*", (req, res) => {
@@ -50,7 +56,11 @@ app.use((err, req, res, next) => {
 const connectDB = async () => {
   try {
     mongoose.set("strictQuery", true);
-    await mongoose.connect(process.env.MONGO_DB);
+    await mongoose.connect(process.env.MONGO_DB , {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        maxPoolSize: 10,
+    });
     console.log("✅ Connected to MongoDB");
   } catch (err) {
     console.error("❌ Failed to connect with MongoDB");

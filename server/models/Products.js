@@ -5,14 +5,17 @@ const ProductsSchema = new mongoose.Schema(
     title: {
       type: String,
       required: true,
+      index: true,
     },
     name: {
       type: String,
       required: true,
+      index: true,
     },
     desc: {
       type: String,
       required: true,
+      index: true,
     },
     img: {
       type: String,
@@ -33,9 +36,11 @@ const ProductsSchema = new mongoose.Schema(
     category: {
       type: [String],
       default: [],
+      index: true,
     },
   },
   { timestamps: true }
 );
-
+  ProductsSchema.index({ "price.org": 1 });
+  ProductsSchema.index({ category: 1 });
 export default mongoose.model("Product",ProductsSchema);

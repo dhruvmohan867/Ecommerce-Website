@@ -15,6 +15,7 @@ const OrdersSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
+      index: true,  
     },
     total_amount: {
       type: mongoose.Types.Decimal128,
@@ -27,9 +28,10 @@ const OrdersSchema = new mongoose.Schema(
     status: {
       type: String,
       default: "Payment Done",
+      index: true,
     },
   },
   { timestamps: true }
 );
-
+  OrdersSchema.index({ user: 1, createdAt: -1 });
 export default mongoose.model("Orders", OrdersSchema);
