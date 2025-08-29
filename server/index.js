@@ -17,6 +17,7 @@ app.use(cors({
   origin: "https://ecommerce-website-frontend3.onrender.com",
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   credentials: true,
+  maxAge: 86400
 }));
 
 app.options("*", cors());
@@ -60,6 +61,7 @@ const connectDB = async () => {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         maxPoolSize: 10,
+        serverSelectionTimeoutMS: 5000,
     });
     console.log("✅ Connected to MongoDB");
   } catch (err) {
