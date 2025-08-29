@@ -29,7 +29,8 @@ const Left = styled.div`
 // `;
 const Image = styled.img`
   position: relative;
-  height: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
   width: 100%;
   object-fit: cover;
 `;
