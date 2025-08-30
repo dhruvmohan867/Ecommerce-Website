@@ -29,7 +29,7 @@ const Section = styled.div`
 const Img = styled.img`
   width: 110%;
   height: 110%;
-  aspect-ratio: 16 / 9;
+  
   object-fit: cover;
   max-width: 1200px;
 `;
