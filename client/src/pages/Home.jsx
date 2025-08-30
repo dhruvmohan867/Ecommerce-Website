@@ -78,7 +78,7 @@ const Home = () => {
   return (
     <Container>
       <Section style={{ alignItems: "center" }}>
-        <Img src="HeroPage.png" alt="Header" />
+        <Img src="HeroPage.png" alt="Header" width="1000px" height="100%"/>
       </Section>
       <Section>
         <Title>Shop by Categories</Title>
