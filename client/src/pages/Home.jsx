@@ -27,9 +27,6 @@ const Section = styled.div`
   gap: 28px;
 `;
 const Img = styled.img`
-  width: 110%;
-  height: 110%;
-  aspect-ratio: 16 / 9;
   object-fit: cover;
   max-width: 1200px;
 `;
@@ -78,7 +75,7 @@ const Home = () => {
   return (
     <Container>
       <Section style={{ alignItems: "center" }}>
-        <Img src="HeroPage.png" alt="Header" />
+        <Img src="HeroPage.png" alt="Header" width="1000px" height="100%"/>
       </Section>
       <Section>
         <Title>Shop by Categories</Title>
