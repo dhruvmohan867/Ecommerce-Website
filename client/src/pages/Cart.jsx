@@ -367,7 +367,7 @@ const Cart = () => {
 
   const calculateSubtotal = () => {
     return products.reduce(
-      (total, item) => total + item.quantity * item?.product?.price?.org,
+      (total, item) => total + item.quantity * ((item?.product?.price?.org || 0) * 10),
       0
     );
   };
@@ -473,7 +473,7 @@ const Cart = () => {
                   <ItemDetails>
                     <ItemTitle>{item?.product?.title}</ItemTitle>
                     <ItemDescription>{item?.product?.name}</ItemDescription>
-                    <ItemPrice>₹{item?.product?.price?.org}</ItemPrice>
+                    <ItemPrice>₹{Math.round((item?.product?.price?.org || 0) * 10)}</ItemPrice>
                   </ItemDetails>
                   
                   <ItemActions>

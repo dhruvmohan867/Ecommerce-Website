@@ -53,3 +53,35 @@ export const filter = [
     items: ["S", "M", "L", "XL", "XXL"],
   },
 ];
+
+// Add this new sample products array
+export const sampleProducts = [
+  {
+    _id: "sample1",
+    title: "Urban Explorer Jacket",
+    img: "https://images.unsplash.com/photo-1551028719-00167b16e2d8?q=80&w=300",
+    price: { org: 450, mrp: 900 },
+    rating: 4.5,
+  },
+  {
+    _id: "sample2",
+    title: "Classic Denim Shirt",
+    img: "https://images.unsplash.com/photo-1602293589914-9e19a7a83515?q=80&w=300",
+    price: { org: 280, mrp: 500 },
+    rating: 4.7,
+  },
+  {
+    _id: "sample3",
+    title: "Minimalist White Tee",
+    img: "https://images.unsplash.com/photo-1581655353564-df123a164d2b?q=80&w=300",
+    price: { org: 150, mrp: 300 },
+    rating: 4.8,
+  },
+  {
+    _id: "sample4",
+    title: "Elegant Formal Trousers",
+    img: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?q=80&w=300",
+    price: { org: 350, mrp: 750 },
+    rating: 4.6,
+  },
+];

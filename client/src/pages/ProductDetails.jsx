@@ -48,7 +48,7 @@ const Details = styled.div`
   gap: 16px;
 `;
 const Title = styled.h1`
-  font-size: 2.5rem;
+  font-size: 2.2rem; /* Reduced from 2.5rem */
   font-weight: 400;
   color: ${({ theme }) => theme.colors.textPrimary};
 `;
@@ -201,8 +201,8 @@ const ProductDetails = () => {
             <Title>{product.title}</Title>
             <Rating value={product.rating || 4.5} readOnly />
             <Price>
-              ₹{product.price.org}
-              <Span>₹{product.price.mrp}</Span>
+              ₹{Math.round(product.price.org * 10)}
+              <Span>₹{Math.round(product.price.mrp * 10)}</Span>
               <Percent>{product.price.off}% OFF</Percent>
             </Price>
             <Desc>{product.desc}</Desc>

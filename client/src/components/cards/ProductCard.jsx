@@ -165,7 +165,7 @@ const ProductCard = ({ product }) => {
       </ImageContainer>
       <Details>
         <Title>{product?.title}</Title>
-        <Price>₹{product?.price?.org}</Price>
+        <Price>₹{Math.round((product?.price?.org || 0) * 10)}</Price>
       </Details>
     </Card>
   );

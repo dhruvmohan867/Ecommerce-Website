@@ -1,10 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styled from "styled-components";
-import { getAllProducts } from "../api";
 import ProductCard from "../components/cards/ProductCard";
-import { CircularProgress } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import Button from "../components/Button";
+import { sampleProducts } from "../utils/data"; // Import sample data
 
 const Container = styled.div`
   padding: 60px 30px;
@@ -22,7 +19,7 @@ const Wrapper = styled.div`
 `;
 
 const Title = styled.h1`
-  font-size: 2rem; /* Reduced from 2.25rem for a more refined look */
+  font-size: 2rem;
   font-weight: 400;
   color: ${({ theme }) => theme.colors.textPrimary};
   text-align: center;
@@ -34,81 +31,19 @@ const CardWrapper = styled.div`
   gap: 32px;
 `;
 
-const LoadingContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 400px;
-`;
-
-const EmptyStateContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 80px 20px;
-  text-align: center;
-  gap: 24px;
-`;
-
-const EmptyStateTitle = styled.h2`
-  font-size: 2rem;
-  font-weight: 400;
-  color: ${({ theme }) => theme.colors.textPrimary};
-`;
-
-const EmptyStateText = styled.p`
-  font-size: 1rem;
-  color: ${({ theme }) => theme.colors.textSecondary};
-  max-width: 450px;
-`;
-
 const NewArrival = () => {
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [products, setProducts] = useState([]);
-
-  const fetchNewProducts = async () => {
-    setLoading(true);
-    try {
-      // Fetch the latest products. The backend sorts by latest by default.
-      const res = await getAllProducts({ limit: 12 }); // Fetch up to 12 new items
-      setProducts(res.data.products || []);
-    } catch (error) {
-      console.error("Failed to fetch new arrivals:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchNewProducts();
-  }, []);
+  // Removed all fetching logic (useState, useEffect, fetchNewProducts)
+  // We will now use the static 'sampleProducts' array directly.
 
   return (
     <Container>
       <Wrapper>
         <Title>New Arrivals</Title>
-        {loading ? (
-          <LoadingContainer>
-            <CircularProgress color="inherit" />
-          </LoadingContainer>
-        ) : products.length > 0 ? (
-          <CardWrapper>
-            {products.map((product) => (
-              <ProductCard key={product._id} product={product} />
-            ))}
-          </CardWrapper>
-        ) : (
-          <EmptyStateContainer>
-            <EmptyStateTitle>Stay Tuned</EmptyStateTitle>
-            <EmptyStateText>
-              We're currently updating our collection. Check back soon for the
-              latest styles and new arrivals!
-            </EmptyStateText>
-            <Button text="Explore All Products" onClick={() => navigate("/shop")} />
-          </EmptyStateContainer>
-        )}
+        <CardWrapper>
+          {sampleProducts.map((product) => (
+            <ProductCard key={product._id} product={product} />
+          ))}
+        </CardWrapper>
       </Wrapper>
     </Container>
   );
