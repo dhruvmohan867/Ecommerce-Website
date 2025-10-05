@@ -11,7 +11,6 @@ import { logout } from "../redux/reducers/userSlice";
 import LogoImg from "../utils/Images/Logo.png";
 
 const Nav = styled.nav`
-  background-color: ${({ theme }) => theme.colors.card};
   height: 80px;
   display: flex;
   align-items: center;
@@ -19,9 +18,16 @@ const Nav = styled.nav`
   position: sticky;
   top: 0;
   z-index: 100;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-  transition: top 0.3s ease-in-out; /* Add transition for smooth hiding/showing */
-  top: ${({ visible }) => (visible ? "0" : "-80px")}; /* Control visibility */
+  transition: background-color 0.3s ease, top 0.3s ease-in-out;
+  
+  /* New logic for background and border */
+  background-color: ${({ theme, isScrolled }) =>
+    isScrolled ? theme.colors.card : "transparent"};
+  border-bottom: 1px solid ${({ theme, isScrolled }) =>
+    isScrolled ? theme.colors.border : "transparent"};
+
+  /* Hide on scroll down logic */
+  top: ${({ visible }) => (visible ? "0" : "-80px")};
 `;
 
 const NavContainer = styled.div`
@@ -39,6 +45,11 @@ const NavLogo = styled(NavLink)`
   gap: 12px;
   font-size: 1.5rem;
   font-weight: ${({ theme }) => theme.fontWeights.bold};
+  /* Change color based on scroll for better visibility */
+  color: ${({ theme, isScrolled }) =>
+    isScrolled ? theme.colors.textPrimary : "white"};
+  text-shadow: ${({ isScrolled }) =>
+    isScrolled ? "none" : "0 1px 3px rgba(0,0,0,0.3)"};
 `;
 
 const Logo = styled.img`
@@ -58,6 +69,17 @@ const StyledNavLink = styled(NavLink)`
   font-weight: ${({ theme }) => theme.fontWeights.medium};
   padding: 8px 4px;
   position: relative;
+  /* Change color based on scroll */
+  color: ${({ theme, isScrolled }) =>
+    isScrolled ? theme.colors.textSecondary : "rgba(255, 255, 255, 0.8)"};
+  text-shadow: ${({ isScrolled }) =>
+    isScrolled ? "none" : "0 1px 3px rgba(0,0,0,0.3)"};
+
+  &:hover {
+    color: ${({ theme, isScrolled }) =>
+      isScrolled ? theme.colors.textPrimary : "white"};
+  }
+
   &::after {
     content: '';
     position: absolute;
@@ -72,7 +94,8 @@ const StyledNavLink = styled(NavLink)`
     width: 100%;
   }
   &.active {
-    color: ${({ theme }) => theme.colors.primary};
+    color: ${({ theme, isScrolled }) =>
+      isScrolled ? theme.colors.primary : "white"};
   }
 `;
 
@@ -83,7 +106,9 @@ const ButtonContainer = styled.div`
 `;
 
 const IconButton = styled.button`
-  color: ${({ theme }) => theme.colors.textSecondary};
+  /* Change color based on scroll */
+  color: ${({ theme, isScrolled }) =>
+    isScrolled ? theme.colors.textSecondary : "rgba(255, 255, 255, 0.9)"};
   padding: 8px;
   border-radius: ${({ theme }) => theme.radii.full};
   display: flex;
@@ -91,8 +116,10 @@ const IconButton = styled.button`
   justify-content: center;
   transition: background-color 0.2s ease, color 0.2s ease;
   &:hover {
-    background-color: ${({ theme }) => theme.colors.background};
-    color: ${({ theme }) => theme.colors.textPrimary};
+    background-color: ${({ theme, isScrolled }) =>
+      isScrolled ? theme.colors.background : "rgba(255,255,255,0.1)"};
+    color: ${({ theme, isScrolled }) =>
+      isScrolled ? theme.colors.textPrimary : "white"};
   }
 `;
 
@@ -121,13 +148,17 @@ const Navbar = ({ setOpenAuth, theme, setTheme }) => {
   const navigate = useNavigate();
   const [visible, setVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [isScrolled, setIsScrolled] = useState(false); // New state for scroll tracking
 
   const controlNavbar = () => {
     if (typeof window !== "undefined") {
-      // Show navbar if scrolling up or at the top
+      // Set scrolled state
+      setIsScrolled(window.scrollY > 10);
+
+      // Hide on scroll down logic
       if (window.scrollY < lastScrollY || window.scrollY < 100) {
         setVisible(true);
-      } else { // Hide if scrolling down
+      } else {
         setVisible(false);
       }
       setLastScrollY(window.scrollY);
@@ -144,37 +175,37 @@ const Navbar = ({ setOpenAuth, theme, setTheme }) => {
   }, [lastScrollY]);
 
   return (
-    <Nav visible={visible}>
+    <Nav visible={visible} isScrolled={isScrolled}>
       <NavContainer>
-        <NavLogo to="/">
+        <NavLogo to="/" isScrolled={isScrolled}>
           <Logo src={LogoImg} alt="Logo" />
           SwiftCart
         </NavLogo>
 
         <NavItems>
-          <StyledNavLink to="/">Home</StyledNavLink>
-          <StyledNavLink to="/shop">Shop</StyledNavLink>
-          <StyledNavLink to="/new-arrivals">New Arrivals</StyledNavLink>
-          <StyledNavLink to="/orders">Orders</StyledNavLink>
+          <StyledNavLink to="/" isScrolled={isScrolled}>Home</StyledNavLink>
+          <StyledNavLink to="/shop" isScrolled={isScrolled}>Shop</StyledNavLink>
+          <StyledNavLink to="/new-arrivals" isScrolled={isScrolled}>New Arrivals</StyledNavLink>
+          <StyledNavLink to="/orders" isScrolled={isScrolled}>Orders</StyledNavLink>
         </NavItems>
 
         <ButtonContainer>
-          <IconButton><SearchRounded /></IconButton>
-          <IconButton onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+          <IconButton isScrolled={isScrolled}><SearchRounded /></IconButton>
+          <IconButton isScrolled={isScrolled} onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
             {theme === 'dark' ? <LightMode /> : <DarkMode />}
           </IconButton>
           
           {currentUser ? (
             <>
-              <IconButton onClick={() => navigate('/favorite')}>
+              <IconButton isScrolled={isScrolled} onClick={() => navigate('/favorite')}>
                 <FavoriteBorder />
               </IconButton>
-              <IconButton onClick={() => navigate('/cart')}>
+              <IconButton isScrolled={isScrolled} onClick={() => navigate('/cart')}>
                 <Badge badgeContent={currentUser.cart?.length} color="primary">
                   <ShoppingCartOutlined />
                 </Badge>
               </IconButton>
-              <IconButton onClick={() => dispatch(logout())}>
+              <IconButton isScrolled={isScrolled} onClick={() => dispatch(logout())}>
                 <LogoutOutlined />
               </IconButton>
               <Avatar src={currentUser.img} sx={{ width: 32, height: 32 }}>
@@ -186,7 +217,7 @@ const Navbar = ({ setOpenAuth, theme, setTheme }) => {
               Sign In
             </AuthButton>
           )}
-          <MobileIcon>
+          <MobileIcon isScrolled={isScrolled}>
             <MenuRounded />
           </MobileIcon>
         </ButtonContainer>

@@ -6,7 +6,7 @@ import { getAllProducts } from "../api/index.js";
 import { CircularProgress } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Button.jsx";
-import HeroImage from "../utils/Images/Header.png";
+import HeroImage from "../utils/Images/HeroImage.png"; // Changed to use HeroImage.png
 import { category } from "../utils/data.js";
 
 const fadeIn = keyframes`
@@ -22,13 +22,14 @@ const HeroSection = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 90vh;
+  height: 100vh;
   padding: 0 40px;
-  background: url(${HeroImage}) no-repeat center 25%/cover; /* Changed position to show more of the top */
+  /* Adjusting the vertical position from 'center' to '40%' to slide the image up slightly */
+  background: url(${HeroImage}) no-repeat center 40% / cover;
   position: relative;
 
   &::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
@@ -46,12 +47,13 @@ const HeroContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: 24px;
-  margin-right: auto; // Align to the left
+  margin-right: auto;
+  padding-top: 80px; /* Add padding to account for navbar height */
 `;
 
 const HeroTitle = styled.h1`
   font-family: "Calistoga", serif;
-  font-size: 3.8rem; /* Reduced font size */
+  font-size: 3.2rem; /* Reduced font size */
   line-height: 1.1;
   text-shadow: 0 4px 12px rgba(0,0,0,0.4);
   @media (max-width: 768px) {
