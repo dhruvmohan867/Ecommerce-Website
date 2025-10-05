@@ -7,173 +7,314 @@ import { useNavigate } from "react-router-dom";
 import { CircularProgress } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { openSnackbar } from "../redux/reducers/snackbarSlice.js";
-import { DeleteOutline } from "@mui/icons-material";
+import { DeleteOutline, Add, Remove, CheckCircle } from "@mui/icons-material";
 
-// Styled Components
 const Container = styled.div`
-  padding: 20px 30px;
-  padding-bottom: 200px;
-  height: 100%;
-  overflow-y: scroll;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  gap: 30px;
-  background: ${({ theme }) => theme.bg};
+  min-height: 100vh;
+  background: ${({ theme }) => theme.bgLight};
+  padding: 40px 20px;
+  
   @media (max-width: 768px) {
     padding: 20px 12px;
   }
 `;
 
-const Section = styled.div`
-  width: 100%;
+const ContentWrapper = styled.div`
   max-width: 1400px;
-  padding: 32px 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-size: 22px;
-  gap: 28px;
+  margin: 0 auto;
 `;
 
-const Title = styled.div`
-  font-size: 28px;
-  font-weight: 500;
-  display: flex;
-  justify-content: ${({ center }) => (center ? "center" : "space-between")};
-  align-items: center;
+const PageTitle = styled.h1`
+  font-size: 36px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.text_primary};
+  margin-bottom: 32px;
+  
+  @media (max-width: 768px) {
+    font-size: 28px;
+    margin-bottom: 24px;
+  }
 `;
 
-const SuccessContainer = styled.div`
-  background: #e0ffe8;
-  border-radius: 16px;
-  padding: 48px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+const CartLayout = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 400px;
   gap: 24px;
+  
+  @media (max-width: 968px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
-const SuccessImg = styled.img`
-  width: 80px;
-  margin-bottom: 8px;
+const CartItems = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 `;
 
-const SuccessMessage = styled.div`
-  font-size: 20px;
-  color: #258d51;
+const CartCard = styled.div`
+  background: ${({ theme }) => theme.card};
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid ${({ theme }) => theme.border_color};
+  box-shadow: 0 2px 8px ${({ theme }) => theme.shadow};
+`;
+
+const CartItem = styled.div`
+  display: flex;
+  gap: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid ${({ theme }) => theme.border_color};
+  
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+  
+  @media (max-width: 600px) {
+    flex-direction: column;
+    gap: 16px;
+  }
+`;
+
+const ItemImage = styled.img`
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 12px;
+  background: ${({ theme }) => theme.bgLight};
+  flex-shrink: 0;
+  
+  @media (max-width: 600px) {
+    width: 100%;
+    height: 200px;
+  }
+`;
+
+const ItemDetails = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+const ItemTitle = styled.h3`
+  font-size: 18px;
   font-weight: 600;
+  color: ${({ theme }) => theme.text_primary};
+`;
+
+const ItemDescription = styled.p`
+  font-size: 14px;
+  color: ${({ theme }) => theme.text_secondary};
+  line-height: 1.5;
+`;
+
+const ItemPrice = styled.div`
+  font-size: 20px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.primary};
+  margin-top: auto;
+`;
+
+const ItemActions = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+`;
+
+const QuantityControl = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: ${({ theme }) => theme.bgLight};
+  border-radius: 8px;
+  padding: 6px;
+  border: 1px solid ${({ theme }) => theme.border_color};
+`;
+
+const QuantityButton = styled.button`
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: none;
+  background: ${({ theme }) => theme.card};
+  color: ${({ theme }) => theme.text_primary};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: ${({ theme }) => theme.primary};
+    color: white;
+  }
+  
+  &:active {
+    transform: scale(0.9);
+  }
+`;
+
+const Quantity = styled.span`
+  font-size: 16px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.text_primary};
+  min-width: 24px;
   text-align: center;
+`;
+
+const DeleteButton = styled.button`
+  background: none;
+  border: none;
+  color: ${({ theme }) => theme.red};
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  
+  &:hover {
+    background: ${({ theme }) => theme.red}15;
+  }
+`;
+
+const OrderSummary = styled(CartCard)`
+  position: sticky;
+  top: 100px;
+  height: fit-content;
+`;
+
+const SummaryTitle = styled.h2`
+  font-size: 24px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.text_primary};
+  margin-bottom: 24px;
+`;
+
+const SummaryRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  font-size: 16px;
+  color: ${({ theme }) => theme.text_secondary};
+`;
+
+const SummaryTotal = styled(SummaryRow)`
+  font-size: 24px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.text_primary};
+  padding-top: 16px;
+  border-top: 2px solid ${({ theme }) => theme.border_color};
+  margin-top: 8px;
+  margin-bottom: 24px;
+`;
+
+const FormSection = styled.div`
+  margin-bottom: 24px;
+`;
+
+const FormTitle = styled.h3`
+  font-size: 18px;
+  font-weight: 600;
+  color: ${({ theme }) => theme.text_primary};
+  margin-bottom: 16px;
+`;
+
+const FormGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const SuccessModal = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 20px;
+`;
+
+const SuccessCard = styled.div`
+  background: ${({ theme }) => theme.card};
+  border-radius: 24px;
+  padding: 48px;
+  max-width: 500px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  
+  @media (max-width: 600px) {
+    padding: 32px 24px;
+  }
+`;
+
+const SuccessIcon = styled.div`
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 24px;
+  background: linear-gradient(135deg, ${({ theme }) => theme.green}, ${({ theme }) => theme.secondary});
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  svg {
+    font-size: 48px;
+    color: white;
+  }
+`;
+
+const SuccessTitle = styled.h2`
+  font-size: 28px;
+  font-weight: 700;
+  color: ${({ theme }) => theme.text_primary};
   margin-bottom: 12px;
 `;
 
-const SuccessSub = styled.div`
+const SuccessMessage = styled.p`
   font-size: 16px;
-  color: #333;
-  text-align: center;
+  color: ${({ theme }) => theme.text_secondary};
+  margin-bottom: 32px;
+  line-height: 1.6;
 `;
 
-const Wrapper = styled.div`
+const ButtonGroup = styled.div`
   display: flex;
-  gap: 32px;
-  width: 100%;
-  padding: 12px;
-  @media (max-width: 750px) {
+  gap: 12px;
+  
+  @media (max-width: 600px) {
     flex-direction: column;
   }
 `;
 
-const Left = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  @media (max-width: 750px) {
-    flex: 1.2;
+const EmptyCart = styled.div`
+  text-align: center;
+  padding: 80px 20px;
+  
+  h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: ${({ theme }) => theme.text_primary};
+    margin-bottom: 12px;
   }
-`;
-
-const Table = styled.div`
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  gap: 30px;
-  ${({ head }) => head && `margin-bottom: 22px;`}
-`;
-
-const TableItem = styled.div`
-  ${({ flex }) => flex && `flex: 1;`}
-  ${({ bold }) =>
-    bold &&
-    `
-    font-weight: 600;
-    font-size: 18px;
-  `}
-`;
-
-const Counter = styled.div`
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  border: 1px solid ${({ theme }) => theme.text_secondary + 40};
-  border-radius: 8px;
-  padding: 4px 12px;
-`;
-
-const Product = styled.div`
-  display: flex;
-  gap: 16px;
-`;
-
-const Img = styled.img`
-  height: 80px;
-`;
-
-const Details = styled.div``;
-
-const Protitle = styled.div`
-  color: ${({ theme }) => theme.primary};
-  font-size: 16px;
-  font-weight: 500;
-`;
-
-const ProDesc = styled.div`
-  font-size: 14px;
-  font-weight: 400;
-  color: ${({ theme }) => theme.text_primary};
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-`;
-
-const ProSize = styled.div`
-  font-size: 14px;
-  font-weight: 500;
-`;
-
-const Right = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  @media (max-width: 750px) {
-    flex: 0.8;
+  
+  p {
+    font-size: 16px;
+    color: ${({ theme }) => theme.text_secondary};
+    margin-bottom: 32px;
   }
-`;
-
-const Subtotal = styled.div`
-  font-size: 22px;
-  font-weight: 600;
-  display: flex;
-  justify-content: space-between;
-`;
-
-const Delivery = styled.div`
-  font-size: 18px;
-  font-weight: 500;
-  display: flex;
-  gap: 6px;
-  flex-direction: column;
 `;
 
 const Cart = () => {
@@ -193,23 +334,16 @@ const Cart = () => {
     completeAddress: "",
   });
 
-  const [paymentDetails, setPaymentDetails] = useState({
-    cardNumber: "",
-    expiryDate: "",
-    cvv: "",
-    cardHolder: "",
-  });
-
   const getProducts = async () => {
     setLoading(true);
     const token = localStorage.getItem("krist-app-token");
     await getCart(token).then((res) => {
       setProducts(res.data);
       setLoading(false);
-    });
+    }).catch(() => setLoading(false));
   };
 
-  const addCart = async (id) => {
+  const addCartItem = async (id) => {
     const token = localStorage.getItem("krist-app-token");
     await addToCart(token, { productId: id, quantity: 1 })
       .then(() => setReload(!reload))
@@ -219,7 +353,7 @@ const Cart = () => {
       });
   };
 
-  const removeCart = async (id, quantity, type) => {
+  const removeCartItem = async (id, quantity, type) => {
     const token = localStorage.getItem("krist-app-token");
     let qnt = quantity > 0 ? 1 : null;
     if (type === "full") qnt = null;
@@ -252,7 +386,10 @@ const Cart = () => {
     try {
       const isFilled = Object.values(deliveryDetails).every((val) => val !== "");
       if (!isFilled) {
-        dispatch(openSnackbar({ message: "Please fill in all required delivery details.", severity: "error" }));
+        dispatch(openSnackbar({ 
+          message: "Please fill in all required delivery details.", 
+          severity: "error" 
+        }));
         setButtonLoad(false);
         return;
       }
@@ -266,115 +403,170 @@ const Cart = () => {
       };
 
       await placeOrder(token, orderDetails);
-
-      dispatch(openSnackbar({ message: "Order placed successfully", severity: "success" }));
-      setButtonLoad(false);
       setOrderSuccess(true);
     } catch (error) {
-      dispatch(openSnackbar({ message: "Failed to place order. Please try again.", severity: "error" }));
+      dispatch(openSnackbar({ 
+        message: "Failed to place order. Please try again.", 
+        severity: "error" 
+      }));
+    } finally {
       setButtonLoad(false);
     }
   };
 
-  if (orderSuccess) {
+  if (loading) {
     return (
       <Container>
-        <Section>
-          <SuccessContainer>
-            <SuccessImg src="https://cdn-icons-png.flaticon.com/512/845/845646.png" alt="Order Success" />
-            <SuccessMessage>🎉 Order Placed Successfully!</SuccessMessage>
-            <SuccessSub>
-              Thank you for shopping with us.
-              <br />
-              We’re preparing your order and you’ll receive updates soon.
-            </SuccessSub>
-            <div style={{ display: "flex", gap: "16px", marginTop: "20px" }}>
-              <Button text="Continue Shopping" onClick={() => navigate("/shop")} />
-              <Button text="Track Orders" onClick={() => navigate("/orders")} />
-            </div>
-          </SuccessContainer>
-        </Section>
+        <ContentWrapper style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
+          <CircularProgress />
+        </ContentWrapper>
+      </Container>
+    );
+  }
+
+  if (orderSuccess) {
+    return (
+      <SuccessModal>
+        <SuccessCard>
+          <SuccessIcon>
+            <CheckCircle />
+          </SuccessIcon>
+          <SuccessTitle>Order Placed Successfully!</SuccessTitle>
+          <SuccessMessage>
+            Thank you for shopping with us. We're preparing your order and you'll receive updates soon.
+          </SuccessMessage>
+          <ButtonGroup>
+            <Button text="Continue Shopping" onClick={() => navigate("/shop")} flex />
+            <Button text="Track Orders" onClick={() => navigate("/orders")} type="secondary" flex />
+          </ButtonGroup>
+        </SuccessCard>
+      </SuccessModal>
+    );
+  }
+
+  if (products.length === 0) {
+    return (
+      <Container>
+        <ContentWrapper>
+          <EmptyCart>
+            <h2>Your Cart is Empty</h2>
+            <p>Looks like you haven't added anything to your cart yet.</p>
+            <Button text="Start Shopping" onClick={() => navigate("/shop")} />
+          </EmptyCart>
+        </ContentWrapper>
       </Container>
     );
   }
 
   return (
     <Container>
-      {loading ? (
-        <CircularProgress />
-      ) : (
-        <Section>
-          <Title>Your Shopping Cart</Title>
-          {products.length === 0 ? (
-            <>Cart is empty</>
-          ) : (
-            <Wrapper>
-              <Left>
-                <Table head>
-                  <TableItem bold flex>Product</TableItem>
-                  <TableItem bold>Price</TableItem>
-                  <TableItem bold>Quantity</TableItem>
-                  <TableItem bold>Subtotal</TableItem>
-                  <TableItem></TableItem>
-                </Table>
-                {products?.map((item) => (
-                  <Table key={item?._id || item?.product?._id}>
-                    <TableItem flex>
-                      <Product>
-                        <Img src={item?.product?.img} alt="" />
-                        <Details>
-                          <Protitle>{item?.product?.title}</Protitle>
-                          <ProDesc>{item?.product?.name}</ProDesc>
-                          <ProSize>Size: Xl</ProSize>
-                        </Details>
-                      </Product>
-                    </TableItem>
-                    <TableItem>₹{item?.product?.price?.org}</TableItem>
-                    <TableItem>
-                      <Counter>
-                        <div style={{ cursor: "pointer", flex: 1 }} onClick={() => removeCart(item?.product?._id, item?.quantity - 1)}>-</div>
-                        {item?.quantity}
-                        <div style={{ cursor: "pointer", flex: 1 }} onClick={() => addCart(item?.product?._id)}>+</div>
-                      </Counter>
-                    </TableItem>
-                    <TableItem>₹{(item.quantity * item?.product?.price?.org).toFixed(2)}</TableItem>
-                    <TableItem>
-                      <DeleteOutline sx={{ color: "red" }} onClick={() => removeCart(item?.product?._id, item?.quantity - 1, "full")} />
-                    </TableItem>
-                  </Table>
-                ))}
-              </Left>
-              <Right>
-                <Subtotal>Subtotal : ₹{calculateSubtotal().toFixed(2)}</Subtotal>
-                <Delivery>
-                  Delivery Details:
-                  <div>
-                    <div style={{ display: "flex", gap: "6px" }}>
-                      <TextInput small placeholder="First Name" value={deliveryDetails.firstName} handleChange={(e) => setDeliveryDetails({ ...deliveryDetails, firstName: e.target.value })} />
-                      <TextInput small placeholder="Last Name" value={deliveryDetails.lastName} handleChange={(e) => setDeliveryDetails({ ...deliveryDetails, lastName: e.target.value })} />
-                    </div>
-                    <TextInput small placeholder="Email Address" value={deliveryDetails.emailAddress} handleChange={(e) => setDeliveryDetails({ ...deliveryDetails, emailAddress: e.target.value })} />
-                    <TextInput small placeholder="Phone no. +91 XXXXX XXXXX" value={deliveryDetails.phoneNumber} handleChange={(e) => setDeliveryDetails({ ...deliveryDetails, phoneNumber: e.target.value })} />
-                    <TextInput small textArea rows="5" placeholder="Complete Address (Address, State, Country, Pincode)" value={deliveryDetails.completeAddress} handleChange={(e) => setDeliveryDetails({ ...deliveryDetails, completeAddress: e.target.value })} />
-                  </div>
-                </Delivery>
-                <Delivery>
-                  Payment Details:
-                  <div>
-                    <TextInput small placeholder="Card Number" value={paymentDetails.cardNumber} handleChange={(e) => setPaymentDetails({ ...paymentDetails, cardNumber: e.target.value })} />
-                    <div style={{ display: "flex", gap: "6px" }}>
-                      <TextInput small placeholder="Expiry Date" value={paymentDetails.expiryDate} handleChange={(e) => setPaymentDetails({ ...paymentDetails, expiryDate: e.target.value })} />
-                      <TextInput small placeholder="CVV" value={paymentDetails.cvv} handleChange={(e) => setPaymentDetails({ ...paymentDetails, cvv: e.target.value })} />
-                    </div>
-                    <TextInput small placeholder="Card Holder name" value={paymentDetails.cardHolder} handleChange={(e) => setPaymentDetails({ ...paymentDetails, cardHolder: e.target.value })} />
-                  </div>
-                </Delivery>
-                <Button text="Place Order" small isLoading={buttonLoad} isDisabled={buttonLoad} onClick={PlaceOrder} />
-              </Right>
-            </Wrapper>
-          )}
-        </Section>
-      )}
+      <ContentWrapper>
+        <PageTitle>Shopping Cart</PageTitle>
+        
+        <CartLayout>
+          <CartItems>
+            <CartCard>
+              {products.map((item) => (
+                <CartItem key={item?._id || item?.product?._id}>
+                  <ItemImage src={item?.product?.img} alt={item?.product?.title} />
+                  
+                  <ItemDetails>
+                    <ItemTitle>{item?.product?.title}</ItemTitle>
+                    <ItemDescription>{item?.product?.name}</ItemDescription>
+                    <ItemPrice>₹{item?.product?.price?.org}</ItemPrice>
+                  </ItemDetails>
+                  
+                  <ItemActions>
+                    <DeleteButton onClick={() => removeCartItem(item?.product?._id, item?.quantity - 1, "full")}>
+                      <DeleteOutline />
+                    </DeleteButton>
+                    
+                    <QuantityControl>
+                      <QuantityButton onClick={() => removeCartItem(item?.product?._id, item?.quantity - 1)}>
+                        <Remove fontSize="small" />
+                      </QuantityButton>
+                      <Quantity>{item?.quantity}</Quantity>
+                      <QuantityButton onClick={() => addCartItem(item?.product?._id)}>
+                        <Add fontSize="small" />
+                      </QuantityButton>
+                    </QuantityControl>
+                  </ItemActions>
+                </CartItem>
+              ))}
+            </CartCard>
+          </CartItems>
+          
+          <OrderSummary>
+            <SummaryTitle>Order Summary</SummaryTitle>
+            
+            <SummaryRow>
+              <span>Subtotal</span>
+              <span>₹{calculateSubtotal().toFixed(2)}</span>
+            </SummaryRow>
+            <SummaryRow>
+              <span>Shipping</span>
+              <span>Free</span>
+            </SummaryRow>
+            
+            <SummaryTotal>
+              <span>Total</span>
+              <span>₹{calculateSubtotal().toFixed(2)}</span>
+            </SummaryTotal>
+            
+            <FormSection>
+              <FormTitle>Delivery Details</FormTitle>
+              <FormGrid>
+                <TextInput
+                  small
+                  placeholder="First Name"
+                  value={deliveryDetails.firstName}
+                  handleChange={(e) => setDeliveryDetails({ ...deliveryDetails, firstName: e.target.value })}
+                />
+                <TextInput
+                  small
+                  placeholder="Last Name"
+                  value={deliveryDetails.lastName}
+                  handleChange={(e) => setDeliveryDetails({ ...deliveryDetails, lastName: e.target.value })}
+                />
+              </FormGrid>
+              <div style={{ marginTop: '12px' }}>
+                <TextInput
+                  small
+                  placeholder="Email Address"
+                  value={deliveryDetails.emailAddress}
+                  handleChange={(e) => setDeliveryDetails({ ...deliveryDetails, emailAddress: e.target.value })}
+                />
+              </div>
+              <div style={{ marginTop: '12px' }}>
+                <TextInput
+                  small
+                  placeholder="Phone Number"
+                  value={deliveryDetails.phoneNumber}
+                  handleChange={(e) => setDeliveryDetails({ ...deliveryDetails, phoneNumber: e.target.value })}
+                />
+              </div>
+              <div style={{ marginTop: '12px' }}>
+                <TextInput
+                  small
+                  textArea
+                  rows="4"
+                  placeholder="Complete Address (Address, State, Country, Pincode)"
+                  value={deliveryDetails.completeAddress}
+                  handleChange={(e) => setDeliveryDetails({ ...deliveryDetails, completeAddress: e.target.value })}
+                />
+              </div>
+            </FormSection>
+            
+            <Button
+              text="Place Order"
+              full
+              isLoading={buttonLoad}
+              isDisabled={buttonLoad}
+              onClick={PlaceOrder}
+            />
+          </OrderSummary>
+        </CartLayout>
+      </ContentWrapper>
     </Container>
   );
 };

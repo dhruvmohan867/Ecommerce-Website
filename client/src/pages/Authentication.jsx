@@ -44,6 +44,12 @@ const Right = styled.div`
   gap: 16px;
   align-items: center;
   justify-content: center;
+  /* Use a more opaque background for dark mode for better readability */
+  background-color: ${({ theme }) =>
+    theme.colors.background === "#111827"
+      ? `${theme.colors.card}F2`
+      : `${theme.colors.background}E6`};
+  backdrop-filter: blur(12px); /* Increased blur for a better effect */
   @media screen and (max-width: 768px) {
     flex: 1;
   }

@@ -14,85 +14,78 @@ import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import NewArrival from "./pages/NewArrival.jsx";
 
-const Container = styled.div`
-  width: 100%;
-  min-height: 100vh;
+const Frame = styled.div`
   display: flex;
   flex-direction: column;
-  background: ${({ theme }) => theme.bg};
-  color: ${({ theme }) => theme.text_primary};
-  transition: all 0.3s ease;
+  min-height: 100vh;
+  background-color: ${({ theme }) => theme.colors.background};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  transition: background-color 0.3s ease, color 0.3s ease;
+`;
+
+const Main = styled.main`
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 `;
 
 function App() {
-  const currentUser = useSelector((state) => state.user.currentUser);
+  const { currentUser } = useSelector((state) => state.user);
   const { open, message, severity } = useSelector((state) => state.snackbar);
   const [openAuth, setOpenAuth] = useState(false);
-  const [themeMode, setThemeMode] = useState('light');
-  
-  // Initialize theme from localStorage or system preference
+  const [theme, setTheme] = useState('light');
+
   useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      setThemeMode(savedTheme);
-    } else {
-      // Detect system preference
-      const systemPrefersDark = window.matchMedia && 
-        window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setThemeMode(systemPrefersDark ? 'dark' : 'light');
-    }
-  }, []);
-  
-  // Save theme preference
-  useEffect(() => {
-    localStorage.setItem('theme', themeMode);
-  }, [themeMode]);
-  
-  // Listen for system theme changes
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const handleSystemThemeChange = (e) => {
-      if (localStorage.getItem('theme') === 'system') {
-        setThemeMode(e.matches ? 'dark' : 'light');
+    const savedTheme = localStorage.getItem('theme') || 'system';
+    const handleThemeChange = () => {
+      if (savedTheme === 'system') {
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        setTheme(systemPrefersDark ? 'dark' : 'light');
+      } else {
+        setTheme(savedTheme);
       }
     };
-    
-    mediaQuery.addEventListener('change', handleSystemThemeChange);
-    return () => mediaQuery.removeEventListener('change', handleSystemThemeChange);
+
+    handleThemeChange();
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    mediaQuery.addEventListener('change', handleThemeChange);
+    return () => mediaQuery.removeEventListener('change', handleThemeChange);
   }, []);
+
+  const handleThemeUpdate = (newTheme) => {
+    localStorage.setItem('theme', newTheme);
+    if (newTheme === 'system') {
+      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setTheme(systemPrefersDark ? 'dark' : 'light');
+    } else {
+      setTheme(newTheme);
+    }
+    document.body.classList.toggle('dark-mode', newTheme === 'dark' || (newTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches));
+  };
   
-  // Determine which theme object to use
-  const currentTheme = themeMode === 'dark' ? darkTheme : lightTheme;
+  useEffect(() => {
+    document.body.classList.toggle('dark-mode', theme === 'dark');
+  }, [theme]);
 
   return (
-    <ThemeProvider theme={currentTheme}>
+    <ThemeProvider theme={theme === 'dark' ? darkTheme : lightTheme}>
       <BrowserRouter>
-        <Container>
-          <Navbar 
-            setOpenAuth={setOpenAuth} 
-            currentUser={currentUser}
-            theme={themeMode}
-            setTheme={setThemeMode}
-          />
-
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/shop" element={<ShopListing />} />
-            <Route path="/favorite" element={<Favourite />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/shop/:id" element={<ProductDetails />} />
-           <Route path="/new-arrivals" element={<NewArrival />} />
-            <Route path="/orders" element={<TrackOrders/>} />
-          </Routes>
-
-          {openAuth && (
-            <Authentication openAuth={openAuth} setOpenAuth={setOpenAuth} />
-          )}
-
-          {open && (
-            <ToastMessage open={open} message={message} severity={severity} />
-          )}
-        </Container>
+        <Frame>
+          <Navbar setOpenAuth={setOpenAuth} currentUser={currentUser} theme={theme} setTheme={handleThemeUpdate} />
+          <Main>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/shop" element={<ShopListing />} />
+              <Route path="/favorite" element={<Favourite />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/shop/:id" element={<ProductDetails />} />
+              <Route path="/new-arrivals" element={<NewArrival />} />
+              <Route path="/orders" element={<TrackOrders />} />
+            </Routes>
+          </Main>
+          {openAuth && <Authentication openAuth={openAuth} setOpenAuth={setOpenAuth} />}
+          <ToastMessage open={open} message={message} severity={severity} />
+        </Frame>
       </BrowserRouter>
     </ThemeProvider>
   );

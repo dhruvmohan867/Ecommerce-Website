@@ -1,67 +1,53 @@
-// utils/Themes.js
-
-// Light theme with dynamic colors
-export const lightTheme = {
-  bg: "#FFFFFF",
-  bgLight: "#FFFFFF",
-  primary: "#1a202c",
-  buttonText: "white",
-  secondary: "#5B86E5",
-
-  disabled: "#b1b2b3",
-  menubar: "#f0f2f5",
-  navbar: "#ffffff",
-  arrow: "#AFAFB5",
-  menu_primary_text: "#2d3748",
-  menu_secondary_text: "#718096",
-  table_header: "#e2e8f0",
-  text_primary: "#1a202c",
-  text_secondary: "#4a5568",
-  card: "#ffffff",
-  black: "#000000",
-  white: "#FFFFFF",
-  shadow: "rgba(0, 0, 0, 0.08)",
-  green: "#38a169",
-  yellow: "#d69e2e",
-  red: "#e53e3e",
-  orange: "#dd6b20",
-  popup: "#ffffff",
-  popup_text_primary: "#1a202c",
-  popup_text_secondary: "#4a5568",
-  output_node: "#edf2f7",
-  border_color: "#e2e8f0",
+const shared = {
+  fonts: {
+    body: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+    heading: '"Calistoga", serif', // A more elegant heading font
+  },
+  fontWeights: {
+    regular: 400,
+    medium: 500,
+    semibold: 600,
+    bold: 700,
+  },
+  radii: {
+    small: '6px',
+    medium: '12px',
+    large: '20px',
+    full: '9999px',
+  },
+  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
 };
 
-// Dark theme with dynamic colors
+export const lightTheme = {
+  ...shared,
+  colors: {
+    primary: '#2563EB', // A strong, confident blue
+    background: '#FFFFFF',
+    card: '#F9FAFB', // A very light off-white for depth
+    textPrimary: '#1F2937', // Dark, readable gray
+    textSecondary: '#6B7280',
+    border: '#E5E7EB',
+    success: '#16A34A',
+    error: '#DC2626',
+    shadow: 'rgba(31, 41, 55, 0.04)',
+    shadowHover: 'rgba(31, 41, 55, 0.1)',
+    buttonText: '#FFFFFF',
+  },
+};
+
 export const darkTheme = {
-  bg: "#121212",
-  // bgLight: "#1e1e1e",
-  // primary: "#e2e8f0",
-  secondary: "#63b3ed",
-  disabled: "#718096",
-  // // menubar: "#1a202c",
-  navbar: "#1a202c",
-  arrow: "#cbd5e0",
-  menu_primary_text: "#e2e8f0",
-  menu_secondary_text: "#a0aec0",
-  table_header: "#2d3748",
-  text_primary: "#e2e8f0",
-  text_secondary: "#a0aec0",
-  card: "#1a202c",
-  black: "#ffffff",
-  white: "#121212",
-  shadow: "rgba(0, 0, 0, 0.3)",
-  green: "#68d391",
-  yellow: "#f6e05e",
-  red: "#fc8181",
-  orange: "#f6ad55",
-  popup: "#2d3748",
-  popup_text_primary: "#e2e8f0",
-  popup_text_secondary: "#a0aec0",
-  output_node: "#2d3748",
-  border_color: "#2d3748",
-   button_bg: "#3b82f6",
-  primary: "#e2e8f0",
-  buttonText: "black",
-  button_hover_bg: "#2563eb",
+  ...shared,
+  colors: {
+    primary: '#60A5FA', // A lighter, vibrant blue for dark mode
+    background: '#111827', // Deep, near-black
+    card: '#1F2937', // A softer dark gray for cards
+    textPrimary: '#F9FAFB',
+    textSecondary: '#9CA3AF',
+    border: '#374151',
+    success: '#4ADE80',
+    error: '#F87171',
+    shadow: 'rgba(0, 0, 0, 0.1)',
+    shadowHover: 'rgba(0, 0, 0, 0.2)',
+    buttonText: '#111827',
+  },
 };

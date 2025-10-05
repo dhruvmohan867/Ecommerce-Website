@@ -1,295 +1,171 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { CircularProgress, Rating } from "@mui/material";
+import { Rating } from "@mui/material";
 import styled from "styled-components";
-import {
-  AddShoppingCartOutlined,
-  FavoriteBorder,
-  FavoriteRounded,
-} from "@mui/icons-material";
-import {
-  addToCart,
-  addToFavorite,
-  deleteFromFavorite,
-  getFavorite,
-} from "../../api";
+import { AddShoppingCartOutlined, FavoriteBorder, FavoriteRounded } from "@mui/icons-material";
+import { addToCart, addToFavorite, deleteFromFavorite, getFavorite } from "../../api";
 import { useDispatch, useSelector } from "react-redux";
 import { openSnackbar } from "../../redux/reducers/snackbarSlice";
 
 const Card = styled.div`
-  width: 250px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  transition: all 0.3s ease-out;
-  cursor: pointer;
-  @media (max-width: 600px) {
-    width: 170px;
-  }
-`;
-const Image = styled.img`
-  width: 100%;
-  height: 320px;
-  border-radius: 6px;
-  object-fit: cover;
-  transition: all 0.3s ease-out;
-  @media (max-width: 600px) {
-    height: 240px;
-  }
-`;
-const Menu = styled.div`
-  position: absolute;
-  z-index: 10;
-  color: ${({ theme }) => theme.text_primary};
-  top: 14px;
-  right: 14px;
-  display: none;
-  flex-direction: column;
-  gap: 12px;
-`;
-
-const Top = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
   position: relative;
-  border-radius: 6px;
-  transition: all 0.3s ease-out;
-  &:hover {
-    background-color: ${({ theme }) => theme.primary};
-  }
+  background-color: ${({ theme }) => theme.colors.card};
+  border-radius: ${({ theme }) => theme.radii.large};
+  overflow: hidden;
+  cursor: pointer;
+  transition: ${({ theme }) => theme.transition};
+  border: 1px solid ${({ theme }) => theme.colors.border};
 
-  &:hover ${Image} {
-    opacity: 0.9;
-  }
-  &:hover ${Menu} {
-    display: flex;
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px ${({ theme }) => theme.colors.shadowHover};
+    border-color: transparent;
   }
 `;
-const MenuItem = styled.div`
+
+const ImageContainer = styled.div`
+  width: 100%;
+  padding-top: 125%; /* 4:5 Aspect Ratio */
+  position: relative;
+  overflow: hidden;
+`;
+
+const Image = styled.img`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+  ${Card}:hover & {
+    transform: scale(1.05);
+  }
+`;
+
+const HoverActions = styled.div`
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  opacity: 0;
+  transform: translateX(10px);
+  transition: ${({ theme }) => theme.transition};
+  ${Card}:hover & {
+    opacity: 1;
+    transform: translateX(0);
+  }
+`;
+
+const ActionButton = styled.button`
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  width: 18px;
-  height: 18px;
-  background: white;
-  padding: 8px;
+  background-color: white;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  color: ${({ theme }) => theme.colors.textSecondary};
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 200;
-`;
+  transition: ${({ theme }) => theme.transition};
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 
-const Rate = styled.div`
-  position: absolute;
-  z-index: 10;
-  color: ${({ theme }) => theme.text_primary};
-  bottom: 8px;
-  left: 8px;
-  padding: 4px 8px;
-  border-radius: 4px;
-  background: white;
-  display: flex;
-  align-items: center;
-  opacity: 0.9;
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.primary};
+    color: white;
+    transform: scale(1.1);
+  }
 `;
 
 const Details = styled.div`
-  display: flex;
-  gap: 6px;
-  flex-direction: column;
-  padding: 4px 10px;
+  padding: 16px;
+  text-align: center;
 `;
-const Title = styled.div`
-  font-size: 16px;
-  font-weight: 700;
-  color: ${({ theme }) => theme.text_primary};
+
+const Title = styled.h3`
+  font-size: 1.1rem;
+  font-family: ${({ theme }) => theme.fonts.body};
+  font-weight: ${({ theme }) => theme.fontWeights.semibold};
+  color: ${({ theme }) => theme.colors.textPrimary};
+  margin-bottom: 4px;
 `;
-const Desc = styled.div`
-  font-size: 16px;
-  font-weight: 400;
-  color: ${({ theme }) => theme.text_primary};
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-`;
-const Price = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 18px;
-  font-weight: 500;
-  color: ${({ theme }) => theme.text_primary};
-`;
-const Span = styled.div`
-  font-size: 14px;
-  font-weight: 500;
-  color: ${({ theme }) => theme.text_secondary + 60};
-  text-decoration: line-through;
-  text-decoration-color: ${({ theme }) => theme.text_secondary + 50};
-`;
-const Percent = styled.div`
-  font-size: 12px;
-  font-weight: 500;
-  color: green;
+
+const Price = styled.p`
+  font-size: 1.2rem;
+  font-weight: ${({ theme }) => theme.fontWeights.bold};
+  color: ${({ theme }) => theme.colors.primary};
 `;
 
 const ProductCard = ({ product }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [favorite, setFavorite] = useState(false);
-  const [favoriteLoading, setFavoriteLoading] = useState(false);
+  const { currentUser } = useSelector((state) => state.user);
+  const [isFavorite, setIsFavorite] = useState(false);
 
-  // 👇 Add this line to get currentUser from Redux
-  const currentUser = useSelector((state) => state.user.currentUser);
-
-  // 👇 Add this line to control auth modal (if you want to open modal instead of alert)
-  // const [openAuth, setOpenAuth] = useState(false); // If you want to use modal
-
-  const requireLogin = () => {
-    alert("Please do signin or login first.");
-    // Or use your snackbar:
-    // dispatch(openSnackbar({ message: "Please do signin or login first.", severity: "warning" }));
-  };
-
-  const addFavorite = async () => {
-    if (!currentUser) return requireLogin();
-    setFavoriteLoading(true);
-    const token = localStorage.getItem("krist-app-token");
-    await addToFavorite(token, { productId: product?._id })
-      .then(() => {
-        setFavorite(true);
-      })
-      .catch((err) => {
-        if (err.response && err.response.status === 403) {
-          requireLogin();
-        } else {
-          dispatch(
-            openSnackbar({
-              message: err.message,
-              severity: "error",
-            })
-          );
-        }
-      })
-      .finally(() => setFavoriteLoading(false));
-  };
-
-  const removeFavorite = async () => {
-    if (!currentUser) return requireLogin();
-    setFavoriteLoading(true);
-    const token = localStorage.getItem("krist-app-token");
-    await deleteFromFavorite(token, { productId: product?._id })
-      .then(() => {
-        setFavorite(false);
-      })
-      .catch((err) => {
-        if (err.response && err.response.status === 403) {
-          requireLogin();
-        } else {
-          dispatch(
-            openSnackbar({
-              message: err.message,
-              severity: "error",
-            })
-          );
-        }
-      })
-      .finally(() => setFavoriteLoading(false));
-  };
-
-  const addCart = async () => {
-    if (!currentUser) return requireLogin();
-    const token = localStorage.getItem("krist-app-token");
-    await addToCart(token, { productId: product?._id, quantity: 1 })
-      .then(() => {
-        navigate("/cart");
-      })
-      .catch((err) => {
-        if (err.response && err.response.status === 403) {
-          requireLogin();
-        } else {
-          dispatch(
-            openSnackbar({
-              message: err.message,
-              severity: "error",
-            })
-          );
-        }
-      });
-  };
-
-  // Use useCallback to avoid useEffect warning
-  const checkFavourite = useCallback(async () => {
-    // Only check if logged in
+  const handleAddToCart = (e) => {
+    e.stopPropagation();
     if (!currentUser) {
-      setFavorite(false);
+      dispatch(openSnackbar({ message: "Please sign in to add items to your cart.", severity: "warning" }));
       return;
     }
-    setFavoriteLoading(true);
+    addToCart(localStorage.getItem("krist-app-token"), { productId: product._id, quantity: 1 })
+      .then(() => {
+        dispatch(openSnackbar({ message: "Added to cart!", severity: "success" }));
+      })
+      .catch(err => dispatch(openSnackbar({ message: err.message, severity: "error" })));
+  };
+
+  const handleToggleFavorite = async (e) => {
+    e.stopPropagation();
+    if (!currentUser) {
+      dispatch(openSnackbar({ message: "Please sign in to manage favorites.", severity: "warning" }));
+      return;
+    }
     const token = localStorage.getItem("krist-app-token");
-    await getFavorite(token)
-      .then((res) => {
-        const isFavorite = res.data?.some(
-          (favorite) => favorite._id === product?._id
-        );
-        setFavorite(isFavorite);
-      })
-      .catch((err) => {
-        // Don't show 403 error if not logged in
-        if (err.response && err.response.status === 403) {
-          setFavorite(false);
-        } else {
-          dispatch(
-            openSnackbar({
-              message: err.message,
-              severity: "error",
-            })
-          );
-        }
-      })
-      .finally(() => setFavoriteLoading(false));
-  }, [dispatch, product?._id, currentUser]);
+    try {
+      if (isFavorite) {
+        await deleteFromFavorite(token, { productId: product._id });
+        setIsFavorite(false);
+      } else {
+        await addToFavorite(token, { productId: product._id });
+        setIsFavorite(true);
+      }
+    } catch (err) {
+      dispatch(openSnackbar({ message: err.message, severity: "error" }));
+    }
+  };
+
+  const checkIsFavorite = useCallback(async () => {
+    if (!currentUser) return;
+    try {
+      const token = localStorage.getItem("krist-app-token");
+      const res = await getFavorite(token);
+      setIsFavorite(res.data?.some((fav) => fav._id === product?._id));
+    } catch (err) { /* Silently fail */ }
+  }, [product?._id, currentUser]);
 
   useEffect(() => {
-    checkFavourite();
-  }, [checkFavourite]);
+    checkIsFavorite();
+  }, [checkIsFavorite]);
 
   return (
-    <Card>
-      <Top>
+    <Card onClick={() => navigate(`/shop/${product._id}`)}>
+      <ImageContainer>
         <Image src={product?.img} loading="lazy" />
-        <Menu>
-          <MenuItem
-            onClick={() => (favorite ? removeFavorite() : addFavorite())}
-          >
-            {favoriteLoading ? (
-              <CircularProgress sx={{ fontSize: "20px" }} />
-            ) : (
-              <>
-                {favorite ? (
-                  <FavoriteRounded sx={{ fontSize: "20px", color: "red" }} />
-                ) : (
-                  <FavoriteBorder sx={{ fontSize: "20px" }} />
-                )}
-              </>
-            )}
-          </MenuItem>{" "}
-          <MenuItem onClick={addCart}>
-            <AddShoppingCartOutlined
-              sx={{ color: "inherit", fontSize: "20px" }}
-            />
-          </MenuItem>
-        </Menu>
-        <Rate>
-          <Rating value={3.5} sx={{ fontSize: "14px" }} />
-        </Rate>
-      </Top>
-      <Details onClick={() => navigate(`/shop/${product._id}`)}>
+        <HoverActions>
+          <ActionButton onClick={handleToggleFavorite}>
+            {isFavorite ? <FavoriteRounded sx={{ color: '#EF4444' }} /> : <FavoriteBorder />}
+          </ActionButton>
+          <ActionButton onClick={handleAddToCart}>
+            <AddShoppingCartOutlined />
+          </ActionButton>
+        </HoverActions>
+      </ImageContainer>
+      <Details>
         <Title>{product?.title}</Title>
-        <Desc>{product?.name}</Desc>
-        <Price>
-          ₹{product?.price?.org} <Span>₹{product?.price?.mrp}</Span>
-          <Percent>₹{product?.price?.off}% Off</Percent>
-        </Price>
+        <Price>₹{product?.price?.org}</Price>
       </Details>
     </Card>
   );

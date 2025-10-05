@@ -1,68 +1,124 @@
 import React, { useEffect, useState } from "react";
-import styled from "styled-components";
-import { category } from "../utils/data.js";
+import styled, { keyframes } from "styled-components";
 import ProductCategoryCard from "../components/cards/ProductCategoryCard.jsx";
 import ProductCard from "../components/cards/ProductCard.jsx";
 import { getAllProducts } from "../api/index.js";
+import { CircularProgress } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import Button from "../components/Button.jsx";
+import HeroImage from "../utils/Images/Header.png";
+import { category } from "../utils/data.js";
+
+const fadeIn = keyframes`
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+`;
 
 const Container = styled.div`
-  padding: 20px 30px;
-  padding-bottom: 200px;
-  height: 100%;
-  overflow-y: scroll;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  gap: 30px;
-  @media (max-width: 768px) {
-    padding: 20px 12px;
-  }
-  background: ${({ theme }) => theme.bg};
-`;
-const Section = styled.div`
-  max-width: 1400px;
-  padding: 32px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-`;
-const Img = styled.img`
-  object-fit: cover;
-  max-width: 1200px;
+  animation: ${fadeIn} 0.8s ease-out;
 `;
 
-const Title = styled.div`
-  font-size: 28px;
-  font-weight: 500;
+const HeroSection = styled.div`
   display: flex;
-  justify-content: ${({ center }) => (center ? "center" : "space-between")};
+  justify-content: center;
   align-items: center;
+  min-height: 90vh;
+  padding: 0 40px;
+  background: url(${HeroImage}) no-repeat center 25%/cover; /* Changed position to show more of the top */
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to right, rgba(0,0,0,0.6), rgba(0,0,0,0.2));
+  }
+`;
+
+const HeroContent = styled.div`
+  position: relative;
+  max-width: 700px;
+  color: white;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-right: auto; // Align to the left
+`;
+
+const HeroTitle = styled.h1`
+  font-family: "Calistoga", serif;
+  font-size: 3.8rem; /* Reduced font size */
+  line-height: 1.1;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  @media (max-width: 768px) {
+    font-size: 2.8rem;
+  }
+`;
+
+const HeroDesc = styled.p`
+  font-size: 1.1rem; /* Reduced font size */
+  max-width: 500px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+`;
+
+const Section = styled.section`
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 80px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  @media (max-width: 768px) {
+    padding: 60px 20px;
+  }
+`;
+
+const SectionTitle = styled.h2`
+  font-size: 2.25rem; /* Reduced font size */
+  color: ${({ theme }) => theme.colors.textPrimary};
+  text-align: center;
 `;
 
 const CardWrapper = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 32px;
+`;
+
+// New styled component for the category section
+const CategoryWrapper = styled.div`
   display: flex;
-  flex-wrap: wrap;
-  gap: 24px;
-  justify-content: center;
-  @media (max-width: 750px) {
-    gap: 14px;
+  gap: 20px;
+  overflow-x: auto;
+  padding: 16px 0;
+  scrollbar-width: none; /* For Firefox */
+  &::-webkit-scrollbar {
+    display: none; /* For Chrome, Safari, and Opera */
   }
+`;
+
+const LoadingContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  padding: 100px 0;
 `;
 
 const Home = () => {
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
-  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const getProducts = async () => {
     setLoading(true);
-    setError(null);
     try {
-      const res = await getAllProducts();
+      const res = await getAllProducts({ limit: 8 });
       setProducts(res.data.products || []);
     } catch (err) {
-      setError("Failed to load products.");
-      setProducts([]);
+      console.error("Failed to load products.");
     } finally {
       setLoading(false);
     }
@@ -74,32 +130,36 @@ const Home = () => {
 
   return (
     <Container>
-      <Section style={{ alignItems: "center" }}>
-        <Img src="HeroPage.png" alt="Header" width="1000px" height="100%"/>
-      </Section>
+      <HeroSection>
+        <HeroContent>
+          <HeroTitle>Where Style Meets Comfort</HeroTitle>
+          <HeroDesc>
+            Explore our curated collection of premium apparel, designed for the modern individual.
+          </HeroDesc>
+          <Button text="Explore Collection" onClick={() => navigate('/shop')} size="large" />
+        </HeroContent>
+      </HeroSection>
+
       <Section>
-        <Title>Shop by Categories</Title>
-        <CardWrapper>
+        <SectionTitle>Shop by Category</SectionTitle>
+        <CategoryWrapper> {/* Use the new wrapper here */}
           {category.map((cat) => (
             <ProductCategoryCard key={cat.name} category={cat} />
           ))}
-        </CardWrapper>
+        </CategoryWrapper>
       </Section>
-      <Section>
-        <Title center>Our Bestseller</Title>
-        <CardWrapper>
-          {loading ? (
-            <div>Loading...</div>
-          ) : error ? (
-            <div style={{ color: "red" }}>{error}</div>
-          ) : products.length === 0 ? (
-            <div>No products found.</div>
-          ) : (
-            products.map((product) => (
+
+      <Section style={{ background: 'theme.colors.card' }}>
+        <SectionTitle>Featured Products</SectionTitle>
+        {loading ? (
+          <LoadingContainer><CircularProgress color="inherit" /></LoadingContainer>
+        ) : (
+          <CardWrapper>
+            {products.map((product) => (
               <ProductCard key={product._id} product={product} />
-            ))
-          )}
-        </CardWrapper>
+            ))}
+          </CardWrapper>
+        )}
       </Section>
     </Container>
   );

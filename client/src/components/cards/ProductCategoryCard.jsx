@@ -3,101 +3,68 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 const Card = styled.div`
-  width: 250px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  transition: all 0.3s ease-out;
+  gap: 12px; /* Reduced gap */
   cursor: pointer;
-  @media (max-width: 600px) {
-    width: 170px;
+  transition: transform 0.3s ease;
+  flex-shrink: 0; /* Prevent cards from shrinking */
+  width: 280px; /* Set a fixed width for consistency */
+
+  &:hover {
+    transform: translateY(-8px);
   }
 `;
+
+const ImageContainer = styled.div`
+  width: 100%;
+  overflow: hidden;
+  border-radius: ${({ theme }) => theme.radii.large};
+`;
+
 const Image = styled.img`
   width: 100%;
-  height: 320px;
-  border-radius: 6px;
+  height: 320px; /* Reduced height */
   object-fit: cover;
-  transition: all 0.3s ease-out;
-  @media (max-width: 600px) {
-    height: 240px;
+  transition: transform 0.4s ease;
+
+  ${Card}:hover & {
+    transform: scale(1.05);
   }
 `;
-const Top = styled.div`
+
+const Details = styled.div`
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  position: relative;
-  border-radius: 6px;
-  transition: all 0.3s ease-out;
-  &:hover {
-    background-color: ${({ theme }) => theme.primary};
-  }
-  &:hover ${Image} {
-    opacity: 0.8;
-  }
 `;
-const Menu = styled.div`
-  width: 90%;
-  position: absolute;
-  z-index: 10;
-  color: ${({ theme }) => theme.text_primary};
-  bottom: 20px;
-  left: 50;
-  right: 50;
-  display: flex;
-  gap: 12px;
+
+const Name = styled.h3`
+  font-size: 1.1rem; /* Reduced font size */
+  font-weight: ${({ theme }) => theme.fontWeights.semibold};
+  color: ${({ theme }) => theme.colors.textPrimary};
 `;
-const Button = styled.div`
-  width: 100%;
-  color:  ${({ theme }) => theme.buttonText};
-  padding: 12px 20px;
-  background-color: ${({ theme }) => theme.primary};
-  border-radius: 12px;
-  text-align: center;
-  font-weight: 1000;
-  cursor: pointer;
-  transition:
-      background 0.3s ,
-      color 0.3s,
-      box-shadow : 0.2s
-  @media (max-width: 600px) {
-    padding: 6px 14px;
-  }
-  &:hover {
-    background: #2363eb;
-    color: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-`;
-const Sale = styled.div`
-  position: absolute;
-  z-index: 10;
-  color: ${({ theme }) => theme.text_primary};
-  top: 10px;
-  right: 10px;
-  font-size: 12px;
-  font-weight: 600;
-  color: white;
-  background: green;
-  padding: 3px 6px;
-  border-radius: 4px;
-  @media (max-width: 600px) {
-    font-size: 10px;
-  }
+
+const Offer = styled.span`
+  font-size: 0.9rem;
+  font-weight: ${({ theme }) => theme.fontWeights.medium};
+  color: ${({ theme }) => theme.colors.secondary};
+  background-color: ${({ theme }) => theme.colors.secondary}20;
+  padding: 4px 10px;
+  border-radius: ${({ theme }) => theme.radii.full};
 `;
 
 const ProductCategoryCard = ({ category }) => {
   const navigate = useNavigate();
   return (
     <Card onClick={() => navigate(`/shop?category=${category.name}`)}>
-      <Top>
+      <ImageContainer>
         <Image src={category.img} />
-        <Menu>
-          <Button>{category.name}</Button>
-        </Menu>
-        <Sale>{category.off}</Sale>
-      </Top>
+      </ImageContainer>
+      <Details>
+        <Name>{category.name}</Name>
+        <Offer>{category.off}</Offer>
+      </Details>
     </Card>
   );
 };

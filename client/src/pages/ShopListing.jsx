@@ -1,94 +1,65 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react"; // <-- Import useCallback
 import ProductCard from "../components/cards/ProductCard.jsx";
-import styled, { useTheme } from "styled-components";
+import styled from "styled-components";
 import { filter } from "../utils/data.js";
-import { CircularProgress, Slider, Pagination } from "@mui/material";
+import { CircularProgress, Slider, Pagination, Checkbox, FormControlLabel } from "@mui/material";
 import { getAllProducts } from "../api/index.js";
 
-// --- Styled components ---
 const Container = styled.div`
-  padding: 20px 30px;
-  height: 100vh;
-  overflow-y: hidden;
   display: flex;
-  align-items: center;
   gap: 30px;
-  @media (max-width: 768px) {
-    padding: 20px 12px;
+  padding: 40px 30px;
+  width: 100%; /* Use full width */
+  @media (max-width: 960px) {
     flex-direction: column;
-    overflow-y: scroll;
+    padding: 20px 16px;
   }
-  background: ${({ theme }) => theme.bg};
 `;
+
 const Filters = styled.div`
-  width: 100%;
-  height: fit-content;
-  overflow-y: hidden;
-  padding: 20px 16px;
-  @media (min-width: 768px) {
-    height: 100%;
-    width: 230px;
-    overflow-y: scroll;
+  width: 280px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  @media (max-width: 960px) {
+    width: 100%;
   }
 `;
 const FilterSection = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  padding: 12px;
+  background: ${({ theme }) => theme.colors.card};
+  border-radius: ${({ theme }) => theme.radii.large};
+  padding: 20px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
 `;
-const Title = styled.div`
-  font-size: 20px;
-  font-weight: 500;
+const Title = styled.h3`
+  font-size: 1.25rem;
+  font-weight: ${({ theme }) => theme.fontWeights.semibold};
+  margin-bottom: 16px;
 `;
 const Menu = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
 `;
 const Products = styled.div`
-  padding: 12px;
-  overflow: hidden;
-  height: fit-content;
-  @media (min-width: 768px) {
-    width: 100%;
-    overflow-y: scroll;
-    height: 100%;
-  }
+  flex-grow: 1;
 `;
 const CardWrapper = styled.div`
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 24px;
+`;
+const PaginationContainer = styled.div`
+  display: flex;
   justify-content: center;
-  @media (max-width: 750px) {
-    gap: 14px;
-  }
+  margin-top: 40px;
 `;
-
-const Item = styled.div`
+const LoadingContainer = styled.div`
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-`;
-
-const SelectableItem = styled.div`
-  cursor: pointer;
-  display: flex;
-  border: 1px solid ${({ theme }) => theme.text_secondary + 50};
-  color: ${({ theme }) => theme.text_secondary + 90};
-  border-radius: 8px;
-  padding: 2px 8px;
-  font-size: 16px;
-  width: fit-content;
-  ${({ selected, theme }) =>
-    selected &&
-    `
-  border: 1.5px solid ${theme.text_primary};
-  color: ${theme.text_primary};
-  background: ${theme.text_primary + 30};
-  font-weight: 500;
-  `}
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
 `;
 
 // --- Component ---
@@ -99,28 +70,29 @@ const ShopListing = () => {
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
   const [priceRange, setPriceRange] = useState([minPrice, maxPrice]);
-  const [pendingRange, setPendingRange] = useState([minPrice, maxPrice]);
-  const [selectedSizes, setSelectedSizes] = useState(["S", "M", "L", "XL"]);
-  const [selectedCategories, setSelectedCategories] = useState([
-    "Men", "Women", "Kids", "Bags"
-  ]);
-  const [error, setError] = useState(null);
-
-  // Pagination state
+  const [selectedSizes, setSelectedSizes] = useState([]);
+  const [selectedCategories, setSelectedCategories] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const theme = useTheme();
+  const handleCategoryChange = (category) => {
+    setSelectedCategories((prev) =>
+      prev.includes(category)
+        ? prev.filter((cat) => cat !== category)
+        : [...prev, category]
+    );
+  };
 
-  // Sync pendingRange whenever priceRange changes externally
-  useEffect(() => {
-    setPendingRange(priceRange);
-  }, [priceRange]);
+  const handleSizeChange = (size) => {
+    setSelectedSizes((prev) =>
+      prev.includes(size)
+        ? prev.filter((s) => s !== size)
+        : [...prev, size]
+    );
+  };
 
-  // Get products with current filters
-  const getFilteredProductsData = async () => {
+  const getFilteredProductsData = useCallback(async () => { // <-- Wrap function in useCallback
     setLoading(true);
-    setError(null);
     try {
       const params = {
         minPrice: priceRange[0],
@@ -134,119 +106,77 @@ const ShopListing = () => {
       setProducts(res.data.products);
       setTotalPages(res.data.totalPages);
     } catch (e) {
-      setError("Failed to fetch products. Please try again.");
+      console.error("Failed to fetch products.");
     } finally {
       setLoading(false);
     }
-  };
+  }, [priceRange, selectedSizes, selectedCategories, page]); // <-- Add dependencies to useCallback
 
-  // Refetch products when filters or page change
   useEffect(() => {
     getFilteredProductsData();
-    // eslint-disable-next-line
-  }, [priceRange, selectedSizes, selectedCategories, page]);
+  }, [getFilteredProductsData]); // <-- Use the memoized function as the dependency
 
   return (
     <Container>
       <Filters>
-        <Menu>
-          {filter.map((filters) => (
-            <FilterSection key={filters.name}>
-              <Title>{filters.name}</Title>
+        {filter.map((filters) => (
+          <FilterSection key={filters.name}>
+            <Title>{filters.name}</Title>
+            <Menu>
               {filters.value === "price" ? (
                 <Slider
-                  aria-label="Price"
-                  value={pendingRange}
+                  value={priceRange}
+                  onChange={(_, newValue) => setPriceRange(newValue)}
                   min={minPrice}
                   max={maxPrice}
-                  id="price"
                   valueLabelDisplay="auto"
-                  marks={[
-                    { value: minPrice, label: `$${minPrice}` },
-                    { value: maxPrice, label: `$${maxPrice}` },
-                  ]}
-                  onChange={(event, value) => setPendingRange(value)}
-                  onChangeCommitted={(event, value) => setPriceRange(value)}
+                  sx={{ color: 'primary.main' }}
                 />
               ) : filters.value === "size" ? (
-                <Item>
-                  {filters.items.map((item) => (
-                    <SelectableItem
-                      key={item}
-                      selected={selectedSizes.includes(item)}
-                      onClick={() =>
-                        setSelectedSizes((prevSizes) =>
-                          prevSizes.includes(item)
-                            ? prevSizes.filter((size) => size !== item)
-                            : [...prevSizes, item]
-                        )
-                      }
-                    >
-                      {item}
-                    </SelectableItem>
-                  ))}
-                </Item>
+                filters.items.map((item) => (
+                  <FormControlLabel
+                    key={item}
+                    control={<Checkbox checked={selectedSizes.includes(item)} onChange={() => handleSizeChange(item)} />}
+                    label={item}
+                  />
+                ))
               ) : filters.value === "category" ? (
-                <Item>
-                  {filters.items.map((item) => (
-                    <SelectableItem
-                      key={item}
-                      selected={selectedCategories.includes(item)}
-                      onClick={() =>
-                        setSelectedCategories((prevCategories) =>
-                          prevCategories.includes(item)
-                            ? prevCategories.filter((cat) => cat !== item)
-                            : [...prevCategories, item]
-                        )
-                      }
-                    >
-                      {item}
-                    </SelectableItem>
-                  ))}
-                </Item>
+                filters.items.map((item) => (
+                  <FormControlLabel
+                    key={item}
+                    control={<Checkbox checked={selectedCategories.includes(item)} onChange={() => handleCategoryChange(item)} />}
+                    label={item}
+                  />
+                ))
               ) : null}
-            </FilterSection>
-          ))}
-        </Menu>
+            </Menu>
+          </FilterSection>
+        ))}
       </Filters>
       <Products>
         {loading ? (
-          <CircularProgress />
-        ) : error ? (
-          <div style={{ color: "red", textAlign: "center" }}>{error}</div>
+          <LoadingContainer><CircularProgress /></LoadingContainer>
         ) : (
           <>
             <CardWrapper>
-              {products && products.length > 0 ? (
+              {products.length > 0 ? (
                 products.map((product) => (
                   <ProductCard key={product._id} product={product} />
                 ))
               ) : (
-                <div style={{ color: "#888", textAlign: "center", margin: "20px auto" }}>
-                  No products found.
-                </div>
+                <p>No products found.</p>
               )}
             </CardWrapper>
-            <div style={{ display: "flex", justifyContent: "center", margin: "24px 0" }}>
-              <Pagination
-                count={totalPages}
-                page={page}
-                onChange={(_, value) => setPage(value)}
-                color="primary"
-                sx={{
-                  "& .MuiPaginationItem-root": {
-                    color: theme.bg === "#121212" ? "#fff" : "#222", // text color
-                    backgroundColor: theme.bg === "#121212" ? "#222" : "#fff", // background
-                    border: "1px solid #888",
-                  },
-                  "& .Mui-selected": {
-                    color: theme.bg === "#121212" ? "#222" : "#fff",
-                    backgroundColor: theme.bg === "#121212" ? "#fff" : "#222",
-                    border: "1px solid #888",
-                  },
-                }}
-              />
-            </div>
+            {totalPages > 1 && (
+              <PaginationContainer>
+                <Pagination
+                  count={totalPages}
+                  page={page}
+                  onChange={(_, value) => setPage(value)}
+                  color="primary"
+                />
+              </PaginationContainer>
+            )}
           </>
         )}
       </Products>

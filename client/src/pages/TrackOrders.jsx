@@ -3,15 +3,39 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { getOrders } from "../api/index.js";
+import Button from "../components/Button.jsx"; // Import the new Button component
 
 const Container = styled.div`
   padding: 40px 20px;
   min-height: 80vh;
-  background: ${({ theme }) => theme.bg};
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 18px;
+`;
+
+// New component for a better empty state
+const EmptyContainer = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  text-align: center;
+  gap: 24px;
+`;
+
+const EmptyTitle = styled.h2`
+  font-size: 2rem;
+  font-weight: 400;
+  color: ${({ theme }) => theme.colors.textPrimary};
+`;
+
+const EmptyText = styled.p`
+  font-size: 1rem;
+  color: ${({ theme }) => theme.colors.textSecondary};
+  max-width: 450px;
 `;
 
 const Title = styled.h2`
@@ -204,8 +228,14 @@ const TrackOrders = () => {
   if (orders.length === 0) {
     return (
       <Container>
-        <Title>No orders found</Title>
-        <ShopButton onClick={() => navigate("/shop")}>Shop Now</ShopButton>
+        <EmptyContainer>
+          <EmptyTitle>No Orders Yet</EmptyTitle>
+          <EmptyText>
+            It looks like you haven't placed any orders. Once you do, you'll be
+            able to track them right here.
+          </EmptyText>
+          <Button text="Start Shopping" onClick={() => navigate("/shop")} />
+        </EmptyContainer>
       </Container>
     );
   }
@@ -249,7 +279,8 @@ const TrackOrders = () => {
 
             <FooterRight>
               <TotalAmount>₹{formatAmount(order.total_amount)}</TotalAmount>
-              <ShopButton onClick={() => navigate("/shop")}>Continue Shopping</ShopButton>
+              {/* Replaced old button with the new one for consistency */}
+              <Button small text="Shop Again" onClick={() => navigate("/shop")} />
             </FooterRight>
           </OrderFooter>
         </OrderCard>

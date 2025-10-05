@@ -1,442 +1,196 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import LogoImg from "../utils/Images/logo1.jpeg";
-import { NavLink } from "react-router-dom";
-import Button from "./Button";
+import { NavLink, useNavigate } from "react-router-dom";
 import {
-  FavoriteBorder,
-  MenuRounded,
-  SearchRounded,
-  ShoppingCartOutlined,
-  DarkMode,
-  LightMode,
-  SettingsBrightness
+  MenuRounded, SearchRounded, ShoppingCartOutlined, FavoriteBorder,
+  DarkMode, LightMode, LogoutOutlined
 } from "@mui/icons-material";
-import { Avatar } from "@mui/material";
+import { Avatar, Badge } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../redux/reducers/userSlice";
-import { useDispatch } from "react-redux";
+import LogoImg from "../utils/Images/Logo.png";
 
-const Nav = styled.div`
-  background-color: ${({ theme }) => theme.navbar};
+const Nav = styled.nav`
+  background-color: ${({ theme }) => theme.colors.card};
   height: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1rem;
   position: sticky;
   top: 0;
-  z-index: 1300;
-  color: ${({ theme }) => theme.text_primary};
-  border-bottom: 1px solid ${({ theme }) => theme.border_color};
-  transition: all 0.3s ease;
+  z-index: 100;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  transition: top 0.3s ease-in-out; /* Add transition for smooth hiding/showing */
+  top: ${({ visible }) => (visible ? "0" : "-80px")}; /* Control visibility */
 `;
 
-const NavbarContainer = styled.div`
+const NavContainer = styled.div`
   width: 100%;
   max-width: 1400px;
   padding: 0 24px;
   display: flex;
-  gap: 14px;
   align-items: center;
   justify-content: space-between;
-  font-size: 1rem;
 `;
 
-export const NavLogo = styled.a`
-  width: 100%;
+const NavLogo = styled(NavLink)`
   display: flex;
   align-items: center;
-  padding: 0 6px;
-  font-weight: 500;
-  font-size: 18px;
-  text-decoration: none;
-  color: ${({ theme }) => theme.text_primary};
+  gap: 12px;
+  font-size: 1.5rem;
+  font-weight: ${({ theme }) => theme.fontWeights.bold};
 `;
 
 const Logo = styled.img`
-  height: 34px;
+  height: 40px;
 `;
 
-const NavItems = styled.ul`
-  width: 100%;
+const NavItems = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 32px;
-  padding: 0 6px;
-  list-style: none;
-  
+  gap: 24px;
   @media screen and (max-width: 768px) {
     display: none;
   }
 `;
 
-const Navlink = styled(NavLink)`
-  display: flex;
-  align-items: center;
-  color: ${({ theme }) => theme.text_primary};
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-decoration: none;
-  
-  &:hover {
-    color: ${({ theme }) => theme.secondary};
+const StyledNavLink = styled(NavLink)`
+  font-weight: ${({ theme }) => theme.fontWeights.medium};
+  padding: 8px 4px;
+  position: relative;
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: ${({ theme }) => theme.colors.primary};
+    transition: width 0.3s ease;
   }
-  
+  &.active::after, &:hover::after {
+    width: 100%;
+  }
   &.active {
-    color: ${({ theme }) => theme.secondary};
-    border-bottom: 1.8px solid ${({ theme }) => theme.secondary};
+    color: ${({ theme }) => theme.colors.primary};
   }
 `;
 
 const ButtonContainer = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: flex-end;
-  gap: 16px;
-  align-items: center;
-  padding: 0 6px;
-  color: ${({ theme }) => theme.primary};
-  // background-color: ${({ theme }) => theme.primary};
-  @media screen and (max-width: 768px) {
-    display: none;
-  }
-`;
-
-const MobileIcon = styled.div`
-  color: ${({ theme }) => theme.text_primary};
-  display: none;
-  
-  @media screen and (max-width: 768px) {
-    display: flex;
-    align-items: center;
-  }
-`;
-
-const Mobileicons = styled.div`
-  color: ${({ theme }) => theme.text_primary};
-  display: none;
-  
-  @media screen and (max-width: 768px) {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-  }
-`;
-
-const MobileMenu = styled.ul`
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-  gap: 16px;
-  padding: 0 6px;
-  list-style: none;
-  width: 80%;
-  padding: 12px 40px 24px 40px;
-  background: ${({ theme }) => theme.card};
-  position: absolute;
-  top: 80px;
-  right: 0;
-  transition: all 0.6s ease-in-out;
-  transform: ${({ isOpen }) => (isOpen ? "translateY(0)" : "translateY(-100%)")};
-  border-radius: 0 0 20px 20px;
-  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
-  opacity: ${({ isOpen }) => (isOpen ? "100%" : "0")};
-  z-index: ${({ isOpen }) => (isOpen ? "1000" : "-1000")};
-  border: 1px solid ${({ theme }) => theme.border_color};
-`;
-
-const TextButton = styled.div`
-  text-align: end;
-  color: ${({ theme }) => theme.text_primary};
-  cursor: pointer;
-  font-size: 16px;
-  transition: all 0.3s ease;
-  font-weight: 600;
-  
-  &:hover {
-    color: ${({ theme }) => theme.secondary};
-  }
-`;
-
-// Theme switcher components
-const ThemeSwitcherContainer = styled.div`
-  position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 12px;
 `;
 
-const ThemeButton = styled.button`
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  color: ${({ theme }) => theme.text_primary};
-  display: flex;
-  align-items: center;
-  justify-content: center;
+const IconButton = styled.button`
+  color: ${({ theme }) => theme.colors.textSecondary};
   padding: 8px;
-  border-radius: 50%;
-  transition: all 0.3s ease;
-  
-  &:hover {
-    background: ${({ theme }) => theme.primary}20;
-    transform: rotate(15deg);
-  }
-  
-  &:focus {
-    outline: none;
-  }
-`;
-
-const ThemeDropdown = styled.div`
-  position: absolute;
-  top: 100%;
-  right: 0;
-  background: ${({ theme }) => theme.card};
-  border: 1px solid ${({ theme }) => theme.border_color};
-  border-radius: 8px;
-  padding: 8px 0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
-  min-width: 160px;
-  transform: ${({ $isOpen }) => ($isOpen ? "scale(1)" : "scale(0.95)")};
-  opacity: ${({ $isOpen }) => ($isOpen ? "1" : "0")};
-  visibility: ${({ $isOpen }) => ($isOpen ? "visible" : "hidden")};
-  transform-origin: top right;
-  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-`;
-
-const ThemeOption = styled.div`
+  border-radius: ${({ theme }) => theme.radii.full};
   display: flex;
   align-items: center;
-  padding: 8px 16px;
-  cursor: pointer;
-  color: ${({ theme }) => theme.text_primary};
-  font-size: 14px;
-  transition: all 0.2s ease;
-  
+  justify-content: center;
+  transition: background-color 0.2s ease, color 0.2s ease;
   &:hover {
-    background: ${({ theme }) => theme.primary}20;
-  }
-  
-  svg {
-    margin-right: 10px;
-    font-size: 18px;
+    background-color: ${({ theme }) => theme.colors.background};
+    color: ${({ theme }) => theme.colors.textPrimary};
   }
 `;
 
-const Navbar = ({ openAuth, setOpenAuth, currentUser, theme, setTheme }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isThemeMenuOpen, setIsThemeMenuOpen] = useState(false);
-  const dispatch = useDispatch();
+const MobileIcon = styled(IconButton)`
+  display: none;
+  @media screen and (max-width: 768px) {
+    display: flex;
+  }
+`;
 
-  // Handle theme change
-  const handleThemeChange = (themeName) => {
-    setTheme(themeName);
-    setIsThemeMenuOpen(false);
+const AuthButton = styled.button`
+  background-color: ${({ theme }) => theme.colors.primary};
+  color: white;
+  padding: 8px 20px;
+  border-radius: ${({ theme }) => theme.radii.full};
+  font-weight: ${({ theme }) => theme.fontWeights.semibold};
+  transition: opacity 0.2s ease;
+  &:hover {
+    opacity: 0.9;
+  }
+`;
+
+const Navbar = ({ setOpenAuth, theme, setTheme }) => {
+  const { currentUser } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [visible, setVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  const controlNavbar = () => {
+    if (typeof window !== "undefined") {
+      // Show navbar if scrolling up or at the top
+      if (window.scrollY < lastScrollY || window.scrollY < 100) {
+        setVisible(true);
+      } else { // Hide if scrolling down
+        setVisible(false);
+      }
+      setLastScrollY(window.scrollY);
+    }
   };
 
-  // Close theme menu when clicking outside
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (isThemeMenuOpen && !e.target.closest('.theme-switcher-container')) {
-        setIsThemeMenuOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isThemeMenuOpen]);
+    if (typeof window !== "undefined") {
+      window.addEventListener("scroll", controlNavbar);
+      return () => {
+        window.removeEventListener("scroll", controlNavbar);
+      };
+    }
+  }, [lastScrollY]);
 
   return (
-    <Nav>
-      <NavbarContainer>
-        <MobileIcon onClick={() => setIsOpen(!isOpen)}>
-          <MenuRounded style={{ color: "inherit" }} />
-        </MobileIcon>
-
-        <NavLogo href="/">
-          <Logo src={LogoImg} alt="Beach Resort" />
+    <Nav visible={visible}>
+      <NavContainer>
+        <NavLogo to="/">
+          <Logo src={LogoImg} alt="Logo" />
+          SwiftCart
         </NavLogo>
 
         <NavItems>
-          <Navlink to="/">Home</Navlink>
-          <Navlink to="/shop">Shop</Navlink>
-          <Navlink to="/new-arrivals">New Arrivals</Navlink>
-          <Navlink to="/orders">Orders</Navlink>
+          <StyledNavLink to="/">Home</StyledNavLink>
+          <StyledNavLink to="/shop">Shop</StyledNavLink>
+          <StyledNavLink to="/new-arrivals">New Arrivals</StyledNavLink>
+          <StyledNavLink to="/orders">Orders</StyledNavLink>
         </NavItems>
 
-        {isOpen && (
-          <MobileMenu isOpen={isOpen}>
-            <Navlink to="/" onClick={() => setIsOpen(!isOpen)}>
-              Home
-            </Navlink>
-            <Navlink onClick={() => setIsOpen(!isOpen)} to="/shop">
-              Shop
-            </Navlink>
-            <Navlink onClick={() => setIsOpen(!isOpen)} to="/new-arrivals">
-              New Arrivals
-            </Navlink>
-            <Navlink onClick={() => setIsOpen(!isOpen)} to="/orders">
-              Orders
-            </Navlink>
-            
-            {/* Theme options for mobile */}
-            <ThemeOption onClick={() => handleThemeChange('light')}>
-              <LightMode /> Light Mode
-            </ThemeOption>
-            <ThemeOption onClick={() => handleThemeChange('dark')}>
-              <DarkMode /> Dark Mode
-            </ThemeOption>
-            <ThemeOption onClick={() => handleThemeChange('system')}>
-              <SettingsBrightness /> 
-            </ThemeOption>
-            
-            {currentUser ? (
-              <Button text="Logout" small onClick={() => dispatch(logout())} />
-            ) : (
-              <div style={{ flex: "1", display: "flex", gap: "12px" }}>
-                <Button
-                  text="Sign Up"
-                  outlined
-                  small
-                  onClick={() => setOpenAuth(!openAuth)}
-                />
-                <Button
-                  text="Sign In"
-                  small
-                  onClick={() => setOpenAuth(!openAuth)}
-                />
-              </div>
-            )}
-          </MobileMenu>
-        )}
-
-        <Mobileicons>
-          <Navlink to="/search">
-            <SearchRounded sx={{ color: "inherit", fontSize: "30px" }} />
-          </Navlink>
-
-          {currentUser ? (
-            <>
-              <Navlink to="/favorite">
-                <FavoriteBorder sx={{ color: "inherit", fontSize: "28px" }} />
-              </Navlink>
-              <Navlink to="/cart">
-                <ShoppingCartOutlined
-                  sx={{ color: "inherit", fontSize: "28px" }}
-                />
-              </Navlink>
-              <Avatar
-                src={currentUser?.img}
-                sx={{
-                  color: "inherit",
-                  fontSize: "28px",
-                }}
-              >
-                {currentUser?.name[0]}
-              </Avatar>
-            </>
-          ) : (
-            <Button
-              text="SignIn"
-              small
-              onClick={() => setOpenAuth(!openAuth)}
-            />
-          )}
-        </Mobileicons>
-
         <ButtonContainer>
-          <Navlink to="/search">
-            <SearchRounded sx={{ color: "inherit", fontSize: "30px" }} />
-          </Navlink>
-
+          <IconButton><SearchRounded /></IconButton>
+          <IconButton onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+            {theme === 'dark' ? <LightMode /> : <DarkMode />}
+          </IconButton>
+          
           {currentUser ? (
             <>
-              <Navlink to="/favorite">
-                <FavoriteBorder sx={{ color: "inherit", fontSize: "28px" }} />
-              </Navlink>
-              <Navlink to="/cart">
-                <ShoppingCartOutlined
-                  sx={{ color: "inherit", fontSize: "28px" }}
-                />
-              </Navlink>
-              <Avatar
-                src={currentUser?.img}
-                sx={{
-                  color: "inherit",
-                  fontSize: "28px",
-                }}
-              >
-                {currentUser?.name[0]}
+              <IconButton onClick={() => navigate('/favorite')}>
+                <FavoriteBorder />
+              </IconButton>
+              <IconButton onClick={() => navigate('/cart')}>
+                <Badge badgeContent={currentUser.cart?.length} color="primary">
+                  <ShoppingCartOutlined />
+                </Badge>
+              </IconButton>
+              <IconButton onClick={() => dispatch(logout())}>
+                <LogoutOutlined />
+              </IconButton>
+              <Avatar src={currentUser.img} sx={{ width: 32, height: 32 }}>
+                {currentUser.name[0]}
               </Avatar>
-              
-              {/* Theme Switcher Button */}
-              <ThemeSwitcherContainer className="theme-switcher-container">
-                <ThemeButton onClick={() => setIsThemeMenuOpen(!isThemeMenuOpen)}>
-                  {theme === 'dark' ? (
-                    <DarkMode fontSize="medium" />
-                  ) : theme === 'light' ? (
-                    <LightMode fontSize="medium" />
-                  ) : (
-                    <SettingsBrightness fontSize="medium" />
-                  )}
-                </ThemeButton>
-                
-                <ThemeDropdown $isOpen={isThemeMenuOpen}>
-                  <ThemeOption onClick={() => handleThemeChange('light')}>
-                    <LightMode /> Light Mode
-                  </ThemeOption>
-                  <ThemeOption onClick={() => handleThemeChange('dark')}>
-                    <DarkMode /> Dark Mode
-                  </ThemeOption>
-                  <ThemeOption onClick={() => handleThemeChange('system')}>
-                    <SettingsBrightness /> System Preference
-                  </ThemeOption>
-                </ThemeDropdown>
-              </ThemeSwitcherContainer>
-              
-              <TextButton onClick={() => dispatch(logout())}>Logout</TextButton>
             </>
           ) : (
-            <>
-              <ThemeSwitcherContainer className="theme-switcher-container">
-                <ThemeButton onClick={() => setIsThemeMenuOpen(!isThemeMenuOpen)}>
-                  {theme === 'dark' ? (
-                    <DarkMode fontSize="medium" />
-                  ) : theme === 'light' ? (
-                    <LightMode fontSize="medium" />
-                  ) : (
-                    <SettingsBrightness fontSize="medium" />
-                  )}
-                </ThemeButton>
-                
-                <ThemeDropdown $isOpen={isThemeMenuOpen}>
-                  <ThemeOption onClick={() => handleThemeChange('light')}>
-                    <LightMode /> Light Mode
-                  </ThemeOption>
-                  <ThemeOption onClick={() => handleThemeChange('dark')}>
-                    <DarkMode /> Dark Mode
-                  </ThemeOption>
-                  <ThemeOption onClick={() => handleThemeChange('system')}>
-                    <SettingsBrightness /> System Preference
-                  </ThemeOption>
-                </ThemeDropdown>
-              </ThemeSwitcherContainer>
-              
-              <Button
-                text="SignIn"
-                small
-                onClick={() => setOpenAuth(!openAuth)}
-              />
-            </>
+            <AuthButton onClick={() => setOpenAuth(true)}>
+              Sign In
+            </AuthButton>
           )}
+          <MobileIcon>
+            <MenuRounded />
+          </MobileIcon>
         </ButtonContainer>
-      </NavbarContainer>
+      </NavContainer>
     </Nav>
   );
 };

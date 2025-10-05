@@ -2,107 +2,91 @@ import { CircularProgress } from "@mui/material";
 import React from "react";
 import styled from "styled-components";
 
-const Button = styled.div`
-  border-radius: 10px;
-  color: white;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
+const StyledButton = styled.button`
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: ${({ theme }) => theme.buttonText};
-  gap: 6px;
-  height: min-content;
-  padding: 16px 26px;
-  box-shadow: 1px 20px 35px 0px ${({ theme }) => theme.primary + 40};
-  border: 1px solid ${({ theme }) => theme.primary};
-  @media (max-width: 600px) {
-    padding: 8px 12px;
+  gap: 8px;
+  padding: ${({ small }) => (small ? "10px 16px" : "12px 24px")};
+  border-radius: ${({ theme }) => theme.radii.medium};
+  font-weight: ${({ theme }) => theme.fontWeights.semibold};
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border: 1px solid transparent;
+  user-select: none;
+  width: ${({ full }) => (full ? "100%" : "auto")};
+
+  ${({ type = "primary", outlined, theme }) => {
+    const colors = {
+      primary: {
+        bg: theme.colors.primary,
+        text: theme.colors.buttonText,
+        border: theme.colors.primary,
+      },
+      secondary: {
+        bg: theme.colors.secondary,
+        text: theme.colors.buttonText,
+        border: theme.colors.secondary,
+      },
+    };
+    const current = colors[type];
+
+    return `
+      background-color: ${outlined ? "transparent" : current.bg};
+      color: ${outlined ? current.bg : current.text};
+      border-color: ${current.border};
+
+      &:hover {
+        background-color: ${
+          outlined
+            ? `${current.bg}1A`
+            : `color-mix(in srgb, ${current.bg}, #000 10%)`
+        };
+        border-color: ${
+          outlined
+            ? current.border
+            : `color-mix(in srgb, ${current.bg}, #000 10%)`
+        };
+      }
+    `;
+  }}
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
-
-  ${({ type, theme }) =>
-    type === "secondary"
-      ? `
-  background: ${theme.secondary};
-border: 1px solid ${({ theme }) => theme.secondary};
-  `
-      : `
-  background: ${theme.primary};
-`}
-
-  ${({ isDisabled }) =>
-    isDisabled &&
-    `
-  opacity: 0.8;
-  cursor: not-allowed;
-
-  `}
-  ${({ isLoading }) =>
-    isLoading &&
-    `
-    opacity: 0.8;
-  cursor: not-allowed;
-`}
-${({ flex }) =>
-    flex &&
-    `
-    flex: 1;
-`}
-
-${({ small }) =>
-    small &&
-    `
-padding: 10px 28px;
-`}
-  ${({ outlined, theme }) =>
-    outlined &&
-    `
-background: transparent;
-color: ${theme.primary};
-  box-shadow: none;
-`}
-  ${({ full }) =>
-    full &&
-    `
-  width: 100%;`}
 `;
 
-const button = ({
+const Button = ({
   text,
   isLoading,
   isDisabled,
   rightIcon,
   leftIcon,
-  type,
+  type = "primary",
   onClick,
-  flex,
+  full,
   small,
   outlined,
-  full,
 }) => {
+  const disabled = isLoading || isDisabled;
+
   return (
-    <Button
-      onClick={() => !isDisabled && !isLoading && onClick()}
-      isDisabled={isDisabled}
+    <StyledButton
+      onClick={onClick}
+      disabled={disabled}
       type={type}
-      isLoading={isLoading}
-      flex={flex}
+      full={full}
       small={small}
       outlined={outlined}
-      full={full}
     >
-      {isLoading && (
-        <CircularProgress
-          style={{ width: "18px", height: "18px", color: "inherit" }}
-        />
-      )}
-      {leftIcon}
-      {text}
-      {isLoading && <> . . .</>}
-      {rightIcon}
-    </Button>
+      {isLoading && <CircularProgress size={20} color="inherit" />}
+      {!isLoading && leftIcon}
+      <span>{text}</span>
+      {!isLoading && rightIcon}
+    </StyledButton>
   );
 };
 
-export default button;
+export default Button;
